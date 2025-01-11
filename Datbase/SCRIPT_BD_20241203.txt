@@ -1,0 +1,213 @@
+
+-- Crear base de datos
+CREATE DATABASE IF NOT EXISTS RiskManagement;
+
+-- Tabla Roles
+CREATE TABLE Roles (
+    id SERIAL PRIMARY KEY, -- Identificador único para cada rol
+    role_name VARCHAR(100) NOT NULL -- Nombre del rol
+);
+
+-- Tabla Usuarios
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY, -- Identificador único para cada usuario
+    username VARCHAR(100) NOT NULL, -- Nombre de usuario
+    password VARCHAR(100) NOT NULL, -- Contraseña del usuario
+    role_id INT NOT NULL, -- Relación con la tabla de roles
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha y hora de la última actualización
+    FOREIGN KEY (role_id) REFERENCES Roles(id) -- Clave foránea a Roles
+);
+
+-- Tabla Productos/Servicios
+CREATE TABLE Products_Services (
+    id SERIAL PRIMARY KEY, -- Identificador único del producto/servicio
+    description VARCHAR(255) NOT NULL -- Descripción del producto/servicio
+);
+
+-- Tabla Canales
+CREATE TABLE Channels (
+    id SERIAL PRIMARY KEY, -- Identificador único del canal
+    description VARCHAR(255) NOT NULL -- Descripción del canal
+);
+
+-- Tabla Categorías de Riesgo
+CREATE TABLE Risk_Categories (
+    id SERIAL PRIMARY KEY, -- Identificador único de la categoría de riesgo
+    description VARCHAR(255) NOT NULL -- Descripción de la categoría de riesgo
+);
+
+-- Tabla Tipos de Riesgo
+CREATE TABLE Risk_Types (
+    id SERIAL PRIMARY KEY, -- Identificador único del tipo de riesgo
+    category_id INT NOT NULL, -- Relación con categoría de riesgo
+    description VARCHAR(255) NOT NULL, -- Descripción del tipo de riesgo
+    FOREIGN KEY (category_id) REFERENCES Risk_Categories(id) -- Clave foránea a Risk_Categories
+);
+
+-- Tabla Macroprocesos
+CREATE TABLE Macroprocesses (
+    id SERIAL PRIMARY KEY, -- Identificador único del macroproceso
+    description VARCHAR(255) NOT NULL -- Descripción del macroproceso
+);
+
+-- Tabla Procesos
+CREATE TABLE Processes (
+    id SERIAL PRIMARY KEY, -- Identificador único del proceso
+    macroprocess_id INT NOT NULL, -- Relación con macroprocesos
+    description VARCHAR(255) NOT NULL, -- Descripción del proceso
+    FOREIGN KEY (macroprocess_id) REFERENCES Macroprocesses(id) -- Clave foránea a Macroprocesses
+);
+
+-- Tabla Factores de Riesgo
+CREATE TABLE Risk_Factors (
+    id SERIAL PRIMARY KEY, -- Identificador único del factor de riesgo
+    risk_type_id INT NOT NULL, -- Relación con tipo de riesgo
+    description VARCHAR(255) NOT NULL, -- Descripción del factor de riesgo
+    FOREIGN KEY (risk_type_id) REFERENCES Risk_Types(id) -- Clave foránea a Risk_Types
+);
+
+-- Tabla Impacto
+CREATE TABLE Impact (
+    id SERIAL PRIMARY KEY, -- Identificador único del impacto
+    level INT NOT NULL, -- Nivel del impacto
+    description VARCHAR(255) NOT NULL, -- Descripción del impacto
+    definition TEXT, -- Definición del impacto
+    criteria_smlv NUMERIC(10, 2) -- Criterio de medición (en SMLV)
+);
+
+-- Tabla Probabilidad
+CREATE TABLE Probability (
+    id SERIAL PRIMARY KEY, -- Identificador único de la probabilidad
+    level INT NOT NULL, -- Nivel de probabilidad
+    description VARCHAR(255) NOT NULL, -- Descripción de la probabilidad
+    definition TEXT, -- Definición de la probabilidad
+    criteria_percentage NUMERIC(5, 2) -- Criterio en porcentaje
+);
+
+-- Tabla Tipo de Control
+CREATE TABLE Risk_Control_Types (
+    id SERIAL PRIMARY KEY, -- Identificador único del tipo de control
+    description VARCHAR(255) NOT NULL -- Descripción del tipo de control
+);
+
+-- Tabla Controles
+CREATE TABLE Controls (
+    id SERIAL PRIMARY KEY, -- Identificador único del control
+    control_type_id INT NOT NULL, -- Relación con tipo de control
+    description VARCHAR(255) NOT NULL, -- Descripción del control
+    frequency VARCHAR(100), -- Frecuencia del control
+    responsible_id INT NOT NULL, -- Persona responsable
+    FOREIGN KEY (control_type_id) REFERENCES Risk_Control_Types(id), -- Clave foránea a tipo de control
+    FOREIGN KEY (responsible_id) REFERENCES Users(id) -- Clave foránea a usuarios
+);
+
+-- Tabla Eventos
+CREATE TABLE Events (
+    id SERIAL PRIMARY KEY, -- Identificador único del evento
+    risk_type_id INT NOT NULL, -- Relación con tipos de riesgo
+    factor VARCHAR(255), -- Factor de riesgo relacionado
+    description TEXT NOT NULL, -- Descripción del evento
+    probability_id INT NOT NULL, -- Relación con probabilidad
+    impact_id INT NOT NULL, -- Relación con impacto
+    FOREIGN KEY (risk_type_id) REFERENCES Risk_Types(id), -- Clave foránea a Risk_Types
+    FOREIGN KEY (probability_id) REFERENCES Probability(id), -- Clave foránea a probabilidad
+    FOREIGN KEY (impact_id) REFERENCES Impact(id) -- Clave foránea a impacto
+);
+
+-- Tabla Registro de Eventos
+CREATE TABLE Event_Logs (
+    id SERIAL PRIMARY KEY, -- Identificador único del registro de evento
+    event_code VARCHAR(50), -- Código único del evento
+    start_date TIMESTAMP NOT NULL, -- Fecha y hora de inicio
+    end_date TIMESTAMP, -- Fecha y hora de fin
+    discovery_date TIMESTAMP, -- Fecha de descubrimiento
+    accounting_date TIMESTAMP, -- Fecha de contabilización
+    amount NUMERIC(10, 2), -- Monto de la pérdida
+    recovered_amount NUMERIC(10, 2), -- Monto recuperado
+    insurance_recovery NUMERIC(10, 2), -- Monto recuperado por seguros
+    risk_factor_id INT, -- Relación con factores de riesgo
+    product_id INT, -- Relación con productos o servicios
+    process_id INT, -- Relación con procesos
+    channel_id INT, -- Relación con canales
+    city VARCHAR(100), -- Ciudad
+    responsible_id INT, -- Persona responsable
+    status VARCHAR(50), -- Estado del evento
+    FOREIGN KEY (risk_factor_id) REFERENCES Risk_Factors(id), -- Clave foránea a factores de riesgo
+    FOREIGN KEY (product_id) REFERENCES Products_Services(id), -- Clave foránea a productos/servicios
+    FOREIGN KEY (process_id) REFERENCES Processes(id), -- Clave foránea a procesos
+    FOREIGN KEY (channel_id) REFERENCES Channels(id), -- Clave foránea a canales
+    FOREIGN KEY (responsible_id) REFERENCES Users(id) -- Clave foránea a personal
+);
+
+-- Tabla Notificaciones
+CREATE TABLE Notifications (
+    id SERIAL PRIMARY KEY, -- Identificador único de la notificación
+    message TEXT NOT NULL, -- Mensaje de la notificación
+    suggestion_control VARCHAR(255), -- Sugerencia de control asociada
+    date_sent TIMESTAMP NOT NULL, -- Fecha y hora de envío
+    user_id INT NOT NULL, -- Usuario asociado a la notificación
+    event_id INT NOT NULL, -- Evento relacionado con la notificación
+    FOREIGN KEY (user_id) REFERENCES Users(id), -- Clave foránea a Users
+    FOREIGN KEY (event_id) REFERENCES Event_Logs(id) -- Clave foránea a Event_Logs
+);
+
+-- Tabla Causas
+CREATE TABLE Causes (
+    id SERIAL PRIMARY KEY, -- Identificador único de la causa
+    description VARCHAR(255) NOT NULL, -- Descripción de la causa
+    risk_factor_id INT NOT NULL, -- Relación obligatoria con factores de riesgo
+    event_id INT NOT NULL, -- Relación obligatoria con eventos
+    FOREIGN KEY (risk_factor_id) REFERENCES Risk_Factors(id), -- Clave foránea a factores de riesgo
+    FOREIGN KEY (event_id) REFERENCES Events(id) -- Clave foránea a eventos
+);
+
+-- Tabla Personal
+CREATE TABLE Personal (
+    id SERIAL PRIMARY KEY, -- Identificador único del personal
+    name VARCHAR(100) NOT NULL, -- Nombre del personal
+    position VARCHAR(100) NOT NULL, -- Cargo del personal
+    area VARCHAR(100), -- Área del personal
+    process_id INT, -- Relación con procesos
+    email VARCHAR(255), -- Correo electrónico del personal
+    FOREIGN KEY (process_id) REFERENCES Processes(id) -- Clave foránea a procesos
+);
+
+-- Tabla Histórico
+CREATE TABLE History (
+    id SERIAL PRIMARY KEY, -- Identificador único del histórico
+    event_id INT NOT NULL, -- Relación con eventos
+    control_id INT NOT NULL, -- Relación con controles
+    start_date TIMESTAMP, -- Fecha inicial del registro
+    end_date TIMESTAMP, -- Fecha final del registro
+    value DECIMAL(10, 2), -- Valor registrado
+    FOREIGN KEY (event_id) REFERENCES Event_Logs(id), -- Clave foránea a registros de eventos
+    FOREIGN KEY (control_id) REFERENCES Controls(id) -- Clave foránea a controles
+);
+
+-- Tabla Trazabilidad
+CREATE TABLE Tracking (
+    id SERIAL PRIMARY KEY, -- Identificador único de la trazabilidad
+    user_id INT NOT NULL, -- Usuario que realiza el seguimiento
+    control_id INT NOT NULL, -- Control asociado
+    event_id INT NOT NULL, -- Evento rastreado
+    tracking_date TIMESTAMP NOT NULL, -- Fecha y hora en que se realizó la trazabilidad
+    FOREIGN KEY (user_id) REFERENCES Users(id), -- Clave foránea a Users
+    FOREIGN KEY (control_id) REFERENCES Controls(id), -- Clave foránea a Controls
+    FOREIGN KEY (event_id) REFERENCES Event_Logs(id) -- Clave foránea a Event_Logs
+);
+
+
+-- Función para actualizar el timestamp
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP; -- Actualiza la fecha y hora
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para la tabla Users
+CREATE TRIGGER set_update_timestamp
+BEFORE UPDATE ON Users
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
