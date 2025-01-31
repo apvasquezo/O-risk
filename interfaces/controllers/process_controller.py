@@ -6,7 +6,7 @@ from infrastructure.database.db_config import get_db
 from domain.repositories.process_repository import ProcessRepository
 from application.use_case.manage_process import (
     create_process,
-    get_process_by_id,
+    get_process,
     get_all_processes,
     update_process,
     delete_process

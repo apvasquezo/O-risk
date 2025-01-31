@@ -1,7 +1,7 @@
-from domain.entities.Cause import Cause
+from domain.entities.Cause import Causes
 from domain.repositories.cause_repository import CauseRepository
 
-async def create_cause(cause_data:Cause, repository:CauseRepository):
+async def create_cause(cause_data:Causes, repository:CauseRepository):
     return await repository.create_cause(cause_data)
 
 async def get_cause(cause_id:int, repository:CauseRepository):

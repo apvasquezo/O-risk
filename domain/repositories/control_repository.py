@@ -4,7 +4,7 @@ from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import Control
-from domain.entities.Control import Control as ControlEntity
+from domain.entities.Control import Controller as ControlEntity
 
 class ControlRepository:
     def __init__(self, session: AsyncSession):

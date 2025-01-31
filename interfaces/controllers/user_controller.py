@@ -6,8 +6,8 @@ from infrastructure.database.db_config import get_db
 from domain.repositories.user_repository import UserRepository
 from application.use_case.manage_user import (
     create_user,
-    get_user_by_id,
-    get_users,
+    get_user,
+    get_all_users,
     update_user,
     delete_user
 )
@@ -33,7 +33,7 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    user = await get_user_by_id(user_id, repository)
+    user = await get_user(user_id, repository)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return UserResponse(id=user.id, username=user.username, role_id=user.role_id)
@@ -41,7 +41,7 @@ async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
 @router.get("/users/", response_model=List[UserResponse])
 async def read_users(db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    users = await get_users(repository)
+    users = await get_all_users(repository)
     return [UserResponse(id=user.id, username=user.username, role_id=user.role_id) for user in users]
 
 @router.put("/users/{user_id}", response_model=UserResponse)

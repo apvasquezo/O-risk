@@ -4,7 +4,7 @@ from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import RiskType
-from domain.entities.Risk_Type import Risk_Type as RiskTypeEntity
+from domain.entities.Risk_Type import Risk_type as RiskTypeEntity
 
 class RiskTypeRepository:
     def __init__(self, session: AsyncSession):

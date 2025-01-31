@@ -4,7 +4,7 @@ from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import RiskFactor
-from domain.entities.Risk_Factor import Risk_Factor as RiskFactorEntity
+from domain.entities.Risk_Factor import Risk_Factory as RiskFactorEntity
 
 class RiskFactorRepository:
     def __init__(self, session: AsyncSession):

@@ -4,7 +4,7 @@ from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import Cause
-from domain.entities.Cause import Cause as CauseEntity
+from domain.entities.Cause import Causes as CauseEntity
 
 class CauseRepository:
     def __init__(self, session: AsyncSession):

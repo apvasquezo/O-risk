@@ -1,4 +1,4 @@
-from domain.entities.Control import Control
+from domain.entities.Control import Controller as Control
 from domain.repositories.control_repository import ControlRepository
 
 async def create_control(control_data: Control, repository: ControlRepository) -> Control:

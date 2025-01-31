@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_db
 from domain.repositories.channel_repository import ChannelRepository
-from domain.entities.channel import Channel
+from domain.entities.channel import Channels
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ class ChannelResponse(BaseModel):
 @router.post("/channels/", response_model=ChannelResponse)
 async def create_channel(channel: ChannelCreate, db: AsyncSession = Depends(get_db)):
     repository = ChannelRepository(db)
-    created_channel = await repository.create_channel(Channel(description=channel.description))
+    created_channel = await repository.create_channel(Channels(description=channel.description))
     return ChannelResponse(id=created_channel.id, description=created_channel.description)
 
 @router.get("/channels/{channel_id}", response_model=ChannelResponse)
@@ -38,7 +38,7 @@ async def read_channels(db: AsyncSession = Depends(get_db)):
 @router.put("/channels/{channel_id}", response_model=ChannelResponse)
 async def update_channel(channel_id: int, channel: ChannelCreate, db: AsyncSession = Depends(get_db)):
     repository = ChannelRepository(db)
-    updated_channel = await repository.update_channel(channel_id, Channel(description=channel.description))
+    updated_channel = await repository.update_channel(channel_id, Channels(description=channel.description))
     if updated_channel is None:
         raise HTTPException(status_code=404, detail="Channel not found")
     return ChannelResponse(id=updated_channel.id, description=updated_channel.description)

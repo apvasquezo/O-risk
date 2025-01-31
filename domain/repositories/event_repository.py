@@ -6,7 +6,7 @@ from typing import List, Optional
 from infrastructure.orm.models import Event
 from domain.entities.Event import Event as EventEntity
 
-class eventRepository:
+class EventRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
         

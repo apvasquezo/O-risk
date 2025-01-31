@@ -2,14 +2,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert, update, delete
 from typing import List, Optional
-from domain.entities.channel import Channel
+from domain.entities.channel import Channels
 from infrastructure.orm.models import Channel as ORMChannel
 
 class ChannelRepository:
     def __init__(self, session: AsyncSession):
         self.session=session
     
-    async def create_channel(self, channel:Channel) -> Channel:
+    async def create_channel(self, channel:Channels) -> Channels:
         stmt= insert(ORMChannel).values(description=channel.description
             ).returning(
                 ORMChannel.id,
@@ -19,32 +19,32 @@ class ChannelRepository:
         await self.session.commit()
         row= result.fetchone()
         if row:
-            return Channel(
+            return Channels(
                 id=row.id,
                 description=row.description
             )
     
-    async def get_channel(self, channel_id:int) -> Optional[Channel]:
+    async def get_channel(self, channel_id:int) -> Optional[Channels]:
         stmt = select(ORMChannel).where(ORMChannel.id == channel_id)
         result = await self.session.execute(stmt)
         orm_channel= result.scalar_one_or_none()
         if orm_channel:
-            return Channel(
+            return Channels(
                 id=orm_channel.id,
                 description=orm_channel.description
             )
         return None
     
-    async def get_all_channel(self) -> List[Channel]:
+    async def get_all_channel(self) -> List[Channels]:
         stmt = select(ORMChannel)
         result = await self.session.execute(stmt)
         orm_channels = result.scalars().all()
-        return [Channel(
+        return [Channels(
             id=c.id, 
             description=c.description
             ) for c in orm_channels]
         
-    async def update_channel(self, channel_id:int, channel:Channel) -> Optional [Channel]:
+    async def update_channel(self, channel_id:int, channel:Channels) -> Optional [Channels]:
         stmt = update(ORMChannel).where(ORMChannel.id == channel_id).values(
             description=channel.description
             ).returning(
@@ -55,7 +55,7 @@ class ChannelRepository:
         await self.session.commit()
         row = result.fetchone()
         if row:
-            return Channel(
+            return Channels(
                 id=row.id,
                 description=row.description
                 )
