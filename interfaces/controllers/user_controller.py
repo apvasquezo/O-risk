@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from utils.auth import verify_password, create_access_token
 from infrastructure.database.db_config import get_db
 from domain.repositories.user_repository import UserRepository
 from application.use_case.manage_user import (
@@ -23,6 +24,24 @@ class UserResponse(BaseModel):
     id: int
     username: str
     role_id: int
+    
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+
+@router.post("/login", response_model=TokenResponse)
+async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
+    repository = UserRepository(db)
+    db_user = await repository.get_user_by_username(user.username)
+    if not db_user or not verify_password(user.password, db_user.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    token = create_access_token({"sub": db_user.username})
+    return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/users/", response_model=UserResponse)
 async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
