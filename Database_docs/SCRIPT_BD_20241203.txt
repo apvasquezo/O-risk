@@ -1,6 +1,6 @@
 
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS RiskManagement;
+CREATE DATABASE IF NOT EXISTS RiskControl;
 
 -- Tabla Roles
 CREATE TABLE Roles (
