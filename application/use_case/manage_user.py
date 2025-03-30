@@ -8,6 +8,9 @@ def create_user(username: str, password: str, role_id: int, repository: SqlAlche
 def get_user(user_id: int, repository: SqlAlchemyUserRepository):
     return repository.get_user(user_id)
 
+async def get_user_username(user_name: str, repository: SqlAlchemyUserRepository):
+    return await repository.get_user_username(user_name)
+
 def get_all_users(repository: SqlAlchemyUserRepository):
     return repository.get_all_users()
 

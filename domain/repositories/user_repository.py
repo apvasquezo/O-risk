@@ -3,7 +3,6 @@ from sqlalchemy.future import select
 from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
-
 from typing import List, Optional
 from infrastructure.orm.models import User as ORMUser
 from domain.entities.User import User as UserEntity
@@ -42,6 +41,23 @@ class UserRepository:
                 id=orm_user.id, 
                 username=orm_user.username, 
                 password=orm_user.password, 
+                role_id=orm_user.role_id
+            )
+        return None
+
+    async def get_user_username(self, username: str) -> Optional[UserEntity]:
+        print(str(username))
+        stmt = select(ORMUser).where(ORMUser.username == username)
+        print(str(stmt))
+        result = await self.session.execute(stmt)
+        print(str(result))
+        orm_user = result.scalar_one_or_none()
+        
+        if orm_user:
+            return UserEntity(
+                id=orm_user.id,
+                username=orm_user.username,
+                password=orm_user.password,
                 role_id=orm_user.role_id
             )
         return None
