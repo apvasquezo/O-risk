@@ -19,6 +19,7 @@ from interfaces.controllers.product_controller import router as product_controll
 from interfaces.controllers.notification_controller import router as notification_controller
 from interfaces.controllers.history_controller import router as history_controller
 from interfaces.controllers.eventLog_controller import router as event_log_controller
+from interfaces.controllers.auth_controller import router as authController
 from infrastructure.database.db_config import Base, engine
 from contextlib import asynccontextmanager
 
@@ -35,6 +36,7 @@ app = FastAPI(lifespan=lifespan)
 def get_root():
     return {"message": "Hola muchachas"}
 
+app.include_router(authController)
 app.include_router(user_controller)
 app.include_router(role_controller)
 app.include_router(risk_category_controller)
