@@ -1,6 +1,0 @@
-authtoken: TU_AUTHTOKEN_DE_NGROK
-region: us  # Puedes cambiarlo a eu, ap, au, sa, jp, in según tu ubicación
-tunnels:
-  jenkins:
-    addr: 8080
-    proto: http

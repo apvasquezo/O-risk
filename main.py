@@ -24,6 +24,7 @@ from infrastructure.database.db_config import Base, engine
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
+
 # Define el manejador de lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):   
