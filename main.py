@@ -22,6 +22,8 @@ from interfaces.controllers.eventLog_controller import router as event_log_contr
 from interfaces.controllers.auth_controller import router as authController
 from infrastructure.database.db_config import Base, engine
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # Define el manejador de lifespan
 @asynccontextmanager
@@ -31,6 +33,16 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+# Configura CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # URL del frontend (Next.js)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 def get_root():
