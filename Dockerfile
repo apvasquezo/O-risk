@@ -5,7 +5,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Copiar solo requirements.txt primero para aprovechar caché de Docker
-COPY /O-risk .
+COPY . .
 
 # Instalar las dependencias
 RUN pip install --no-cache-dir -r requirements.txt
