@@ -17,7 +17,7 @@ services:
     container_name: python_backend
     restart: always
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:risk@db:5432/riskcontrol
+      DATABASE_URL: postgresql+asyncpg://postgres_db:risk@db:5432/riskcontrol
     ports:
       - 8000:8000
     depends_on:
