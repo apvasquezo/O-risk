@@ -69,7 +69,7 @@ class EventLog(Base):
     __tablename__ = 'event_logs'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    event_id = Column(Integer, ForeignKey('events'), nullable=True)
+    event_id = Column(Integer, ForeignKey('events.id'), nullable=True)
     descripcion=Column(String(250), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=True)
