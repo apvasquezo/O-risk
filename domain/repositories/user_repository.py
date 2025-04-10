@@ -19,6 +19,7 @@ class UserRepository:
         ).returning(ORMUser.id, ORMUser.username, ORMUser.role_id)
         try:
             result = await self.session.execute(stmt)
+            print(result)
             await self.session.commit()
             row = result.fetchone()
             if row:
