@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_db
 from domain.repositories.user_repository import UserRepository
 from application.use_case.manage_user import (
-    create_user as create_user_use_case,
+    create_user,
     get_user as get_user_use_case,
     get_all_users as get_all_users_use_case,
     update_user as update_user_use_case,
@@ -25,9 +25,9 @@ class UserResponse(BaseModel):
     role_id: int
 
 @router.post("/users/", response_model=UserResponse)
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user_1(user: UserCreate, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    created_user = await create_user_use_case(user, repository)
+    created_user = await create_user(user.username, user.password, user.role_id, repository)
     return UserResponse(id=created_user.id, username=created_user.username, role_id=created_user.role_id)
 
 @router.get("/users/{user_id}", response_model=UserResponse)

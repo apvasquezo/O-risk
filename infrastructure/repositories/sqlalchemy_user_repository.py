@@ -6,7 +6,7 @@ class SqlAlchemyUserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user: User):
+    async def create_user(self, user: User):
         db_user = ORMUser(username=user.username, password=user.password, role_id=user.role_id)
         self.db.add(db_user)
         self.db.commit()

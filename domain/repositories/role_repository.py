@@ -11,9 +11,7 @@ class RoleRepository:
         self.session = session
 
     async def create_role(self, role: RoleEntity) -> RoleEntity:
-        print(Role)
-        stmt = insert(Role).values(name=role.name).returning(Role.id, Role.name, Role.state)
-        print(stmt)
+        stmt = insert(Role).values(name=role.name, state=role.state).returning(Role.id, Role.name, Role.state)
         try:
             result = await self.session.execute(stmt)
             await self.session.commit()
