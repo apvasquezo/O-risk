@@ -63,9 +63,9 @@ python main.py init-db
 Este paso:
 - Creará las tablas necesarias.
 - Registrará un usuario administrador predeterminado con las siguientes credenciales:
-  - **Usuario**: `admin`
-  - **Contraseña**: `admin123`
-  - **Rol**: `super`
+  - **Usuario**: `super`
+  - **Contraseña**: `risk123`
+  - **Rol**: 1
 
 ### 6. Ejecutar la API
 
@@ -86,8 +86,8 @@ La API estará disponible en la URL predeterminada: `http://localhost:8000`.
 
 ```json
 {
-  "username": "admin",
-  "password": "admin123"
+  "username": "super",
+  "password": "risk123"
 }
 ```
 
