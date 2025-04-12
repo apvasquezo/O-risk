@@ -107,7 +107,7 @@ INITIAL_SETUP=False
 
 Para un entorno de producción:
 
-- Utilice herramientas como **Gunicorn** o **Uvicorn** en modo asíncrono.
+- Utilice herramientas como **Uvicorn** en modo asíncrono.
 - Configure un proxy inverso con **Nginx**.
 - Gestione los procesos con herramientas como **Supervisor** o **PM2**.
 
