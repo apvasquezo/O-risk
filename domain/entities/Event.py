@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class Event(BaseModel):
-    id:Optional[int]=None
+    id_event:Optional[int]=None
     risk_type_id:int
     factor:str
     description:str

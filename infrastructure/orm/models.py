@@ -16,7 +16,7 @@ from ..database.db_config import Base
 class Role(Base):
     __tablename__ = "roles"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id_role = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     state=Column(Boolean, nullable=False)
     users = relationship("User", back_populates="role")
@@ -24,10 +24,10 @@ class Role(Base):
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id_user = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(100), unique=True, nullable=False, index=True)
     password = Column(String(100), nullable=False)
-    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
+    role_id = Column(Integer, ForeignKey("roles.id_role"), nullable=False)
     role = relationship("Role", back_populates="users") 
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
@@ -35,42 +35,42 @@ class User(Base):
 class Cause(Base):
     __tablename__ = 'causes'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_cause = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String(255), nullable=False)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id'), nullable=False)
-    event_id = Column(Integer, ForeignKey('events.id'), nullable=False)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=False)
+    event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
 
 class Channel(Base):
     __tablename__ = "channels"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    description = Column(String(255), nullable=False)
+    id_channel = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    description = Column(String(50), nullable=False)
 
 class Control(Base):
     __tablename__ = 'controls'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    control_type_id = Column(Integer, ForeignKey('risk_control_types.id'), nullable=False)
+    id_control = Column(Integer, primary_key=True, autoincrement=True)
+    control_type_id = Column(Integer, ForeignKey('risk_control_types.id_controltype'), nullable=False)
     description = Column(String(255), nullable=False)
     frequency = Column(String(100), nullable=True)
-    responsible_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
 
 class Event(Base):
     __tablename__ = 'events'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    risk_type_id = Column(Integer, ForeignKey('risk_types.id'), nullable=False)
+    id_event = Column(Integer, primary_key=True, autoincrement=True)
+    risk_type_id = Column(Integer, ForeignKey('risk_types.id_riskfactor'), nullable=False)
     factor = Column(String(255), nullable=True)
     description = Column(Text, nullable=False)
-    probability_id = Column(Integer, ForeignKey('probability.id'), nullable=False)
-    impact_id = Column(Integer, ForeignKey('impact.id'), nullable=False)
+    probability_id = Column(Integer, ForeignKey('probability.level'), nullable=False)
+    impact_id = Column(Integer, ForeignKey('impact.level'), nullable=False)
 
 class EventLog(Base):
     __tablename__ = 'event_logs'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    event_id = Column(Integer, ForeignKey('events.id'), nullable=True)
-    descripcion=Column(String(250), nullable=False)
+    id_eventlog = Column(Integer, primary_key=True, autoincrement=True)
+    event_id = Column(Integer, ForeignKey('events.id_event'), nullable=True)
+    description=Column(String(250), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=True)
     discovery_date = Column(DateTime, nullable=True)
@@ -78,112 +78,142 @@ class EventLog(Base):
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id'), nullable=True)
-    product_id = Column(Integer, ForeignKey('products_services.id'), nullable=True)
-    process_id = Column(Integer, ForeignKey('processes.id'), nullable=True)
-    channel_id = Column(Integer, ForeignKey('channels.id'), nullable=True)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=True)
+    product_id = Column(Integer, ForeignKey('products_services.id_service'), nullable=True)
+    process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
+    channel_id = Column(Integer, ForeignKey('channels.id_chanel'), nullable=True)
     city = Column(String(100), nullable=True)
-    responsible_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+    responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
 
 class Impact(Base):
     __tablename__ = 'impact'
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    level = Column(Integer, nullable=False)
-    description = Column(String(255), nullable=False)
+    #id_impact = Column(Integer, autoincrement=True)
+    level = Column(Integer,primary_key=True, nullable=False)
+    description = Column(String(100), nullable=False)
     definition = Column(Text)
     criteria_smlv = Column(Numeric(10, 2))
 
 class Macroprocess(Base):
     __tablename__ = "macroprocesses"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    description = Column(String(255), nullable=False)
+    id_macro = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    description = Column(String(100), nullable=False)
 
 class Personal(Base):
     __tablename__ = 'personal'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_personal = Column(Integer, primary_key=True) #esta debe ser la cedula del empleado
     name = Column(String(100), nullable=False)
     position = Column(String(100), nullable=False)
     area = Column(String(100), nullable=True)
-    process_id = Column(Integer, ForeignKey('processes.id'), nullable=True)
+    process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
     email = Column(String(255), nullable=True)
 
 class Probability(Base):
     __tablename__ = 'probability'
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    level = Column(Integer, nullable=False)
-    description = Column(String(255), nullable=False)
+    #id_probability = Column(Integer,  autoincrement=True)
+    level = Column(Integer, primary_key=True, nullable=False)
+    description = Column(String(100), nullable=False)
     definition = Column(Text)
     criteria_smlv = Column(Numeric(5, 2))
 
 class Process(Base):
     __tablename__ = "processes"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    macroprocess_id = Column(Integer, ForeignKey('macroprocesses.id'), nullable=False)
+    id_process = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    macroprocess_id = Column(Integer, ForeignKey('macroprocesses.id_macro'), nullable=False)
     description = Column(String(255), nullable=False)
 
 class Product(Base):
     __tablename__ = "products_services"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    description = Column(String(255), nullable=False)
+    id_product = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    description = Column(String(100), nullable=False)
 
 class RiskCategory(Base):
     __tablename__ = "risk_categories"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id_riskcategory = Column(Integer, primary_key=True, index=True, autoincrement=True)
     description = Column(String(255), nullable=False)
 
 class RiskControlType(Base):
     __tablename__ = "risk_control_types"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    description = Column(String(255), nullable=False)
+    id_controltype = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    description = Column(String(100), nullable=False)
 
 class RiskFactor(Base):
     __tablename__ = "risk_factors"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    risk_type_id = Column(Integer, ForeignKey('risk_types.id'), nullable=False)
+    id_factor = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    risk_type_id = Column(Integer, ForeignKey('risk_types.id_risktype'), nullable=False)
     description = Column(String(255), nullable=False)
 
 class RiskType(Base):
     __tablename__ = "risk_types"
     
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    category_id = Column(Integer, ForeignKey('risk_categories.id'), nullable=False)
+    id_risktype = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    category_id = Column(Integer, ForeignKey('risk_categories.id_riskcategory'), nullable=False)
     description = Column(String(255), nullable=False)
 
 class Tracking(Base):
     __tablename__ = 'tracking'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    control_id = Column(Integer, ForeignKey('controls.id'), nullable=False)
-    event_id = Column(Integer, ForeignKey('event_logs.id'), nullable=False)
+    id_tracking = Column(Integer, primary_key=True, autoincrement=True)
+    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=False)
+    event_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
     tracking_date = Column(DateTime, nullable=False)
     
 class Notification(Base):
     __tablename__ = 'notification'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_notify = Column(Integer, primary_key=True, autoincrement=True)
     message= Column(String(255), nullable=False)
     suggestion_control = Column(String(255), nullable=False)
     date_send = Column(DateTime, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    eventlog_id=Column(Integer, ForeignKey('event_logs.id'), nullable=False)
+    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    eventlog_id=Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
 
 class History(Base):
     __tablename__ = 'history'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    eventlog_id=Column(Integer, ForeignKey('event_logs.id'), nullable=False)
-    control_id = Column(Integer, ForeignKey('controls.id'), nullable=False)
+    id_history = Column(Integer, primary_key=True, autoincrement=True)
+    eventlog_id=Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
+    control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=False)
     star_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
     value_risk = Column(Numeric(5, 2))
+
+class Plan_action(Base):
+    __tablename__ = 'plan_action'
+    
+    id_plan = Column(Integer, primary_key=True, autoincrement=True)
+    description=Column(String(255), nullable=False)
+    star_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    state=Column(String(50), nullable=True)
+    
+class Control_action(Base):
+    __tablename__ = 'control_action'
+    id_controlaction=Column(Integer, primary_key=True, autoincrement=True)
+    control_id=Column(Integer, ForeignKey('controls.id_control'), nullable=False)
+    action_id=Column(Integer, ForeignKey('plan_action.id_plan'), nullable=False)
+    
+class Evaluation(Base):
+    __tablename__ = 'evaluation_control'
+    
+    id_evaluation = Column(Integer, primary_key=True, autoincrement=True)
+    control_id=Column(Integer, ForeignKey('controls.id_control'), nullable=False)
+    event_id=Column(Integer, ForeignKey('events.id_event'), nullable=False)
+    eval_date=Column(DateTime, nullable=False)
+    n_probability=Column(Integer, ForeignKey('probability.level'), nullable=False)
+    n_impact=Column(Integer, ForeignKey('impact.level'), nullable=False)
+    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    next_date = Column(DateTime, nullable=False)
+    description=Column(String(255), nullable=False)
+    state=Column(String(50), nullable=True)

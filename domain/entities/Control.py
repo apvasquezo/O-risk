@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Controller(BaseModel):
-    id:Optional[int]=None
+    id_control:Optional[int]=None
     description:str
     frequency:Optional[str]
     control_type_id:int

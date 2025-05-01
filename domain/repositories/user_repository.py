@@ -16,7 +16,7 @@ class UserRepository:
             username=user.username, 
             password=user.password, 
             role_id=user.role_id
-        ).returning(ORMUser.id, ORMUser.username, ORMUser.role_id)
+        ).returning(ORMUser.id_user, ORMUser.username, ORMUser.role_id)
         try:
             result = await self.session.execute(stmt)
             print(result)
@@ -24,7 +24,7 @@ class UserRepository:
             row = result.fetchone()
             if row:
                 return UserEntity(
-                    id=row.id, 
+                    id_user=row.id_user, 
                     username=row.username, 
                     password=user.password, 
                     role_id=row.role_id
@@ -34,12 +34,12 @@ class UserRepository:
             raise ValueError("User with this username already exists") from e
 
     async def get_user(self, user_id: int) -> Optional[UserEntity]:
-        stmt = select(ORMUser).where(ORMUser.id == user_id)
+        stmt = select(ORMUser).where(ORMUser.id_user == user_id)
         result = await self.session.execute(stmt)
         orm_user = result.scalar_one_or_none()
         if orm_user:
             return UserEntity(
-                id=orm_user.id, 
+                id_user=orm_user.id_user, 
                 username=orm_user.username, 
                 password=orm_user.password, 
                 role_id=orm_user.role_id
@@ -56,7 +56,7 @@ class UserRepository:
         
         if orm_user:
             return UserEntity(
-                id=orm_user.id,
+                id_user=orm_user.id_user,
                 username=orm_user.username,
                 password=orm_user.password,
                 role_id=orm_user.role_id
@@ -69,7 +69,7 @@ class UserRepository:
         orm_users = result.scalars().all()
         return [
             UserEntity(
-                id=u.id, 
+                id_user=u.id_user, 
                 username=u.username, 
                 password=u.password, 
                 role_id=u.role_id
@@ -77,17 +77,17 @@ class UserRepository:
         ]
 
     async def update_user(self, user_id: int, user: UserEntity) -> Optional[UserEntity]:
-        stmt = update(ORMUser).where(ORMUser.id == user_id).values(
+        stmt = update(ORMUser).where(ORMUser.id_user == user_id).values(
             username=user.username, 
             password=user.password, 
             role_id=user.role_id
-        ).returning(ORMUser.id, ORMUser.username, ORMUser.role_id)
+        ).returning(ORMUser.id_user, ORMUser.username, ORMUser.role_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return UserEntity(
-                id=row.id, 
+                id_user=row.id_user, 
                 username=row.username, 
                 password=user.password, 
                 role_id=row.role_id
@@ -95,7 +95,7 @@ class UserRepository:
         return None
 
     async def delete_user(self, user_id: int) -> None:
-        stmt = delete(ORMUser).where(ORMUser.id == user_id)
+        stmt = delete(ORMUser).where(ORMUser.id_user == user_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:
