@@ -37,7 +37,7 @@ class Cause(Base):
     
     id_cause = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String(255), nullable=False)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=False)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=False)
     event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
 
 class Channel(Base):
@@ -59,7 +59,7 @@ class Event(Base):
     __tablename__ = 'events'
     
     id_event = Column(Integer, primary_key=True, autoincrement=True)
-    risk_type_id = Column(Integer, ForeignKey('risk_types.id_riskfactor'), nullable=False)
+    risk_type_id = Column(Integer, ForeignKey('risk_types.id_risktype'), nullable=False)
     factor = Column(String(255), nullable=True)
     description = Column(Text, nullable=False)
     probability_id = Column(Integer, ForeignKey('probability.level'), nullable=False)
@@ -78,10 +78,10 @@ class EventLog(Base):
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=True)
-    product_id = Column(Integer, ForeignKey('products_services.id_service'), nullable=True)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=True)
+    product_id = Column(Integer, ForeignKey('products_services.id_product'), nullable=True)
     process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
-    channel_id = Column(Integer, ForeignKey('channels.id_chanel'), nullable=True)
+    channel_id = Column(Integer, ForeignKey('channels.id_channel'), nullable=True)
     city = Column(String(100), nullable=True)
     responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
