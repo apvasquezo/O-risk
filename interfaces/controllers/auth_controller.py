@@ -17,6 +17,7 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+    role:int
     
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -39,9 +40,10 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     # Crear token de acceso
+   
     token = create_access_token({"sub": db_user.username})
     print("Authentication successful.")
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer", "role":db_user.role_id}
 
 @router.get("/users/me")
 async def read_users_me(token: str = Depends(oauth2_scheme)):

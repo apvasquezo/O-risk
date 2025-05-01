@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class Tracking(BaseModel):
-    id:Optional[int]=None
+    id_tracking:Optional[int]=None
     user_id:int
     control_id:int
     event_id:int

@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:risk@localhost:5432/riskcontrol"  # ejemplo
-    app_port: str = "8000"  
-    db_name: str = "DB" 
+
+    print ("estamos en config", DATABASE_URL)
     class Config:
         env_file = ".env"
 

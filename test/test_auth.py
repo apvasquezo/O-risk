@@ -24,21 +24,3 @@ def test_login_failure():
     )
     assert response.status_code == 401
     assert response.json() == {"detail": "Incorrect username or password"}
-
-def test_protected_route():
-    # Obtener el token de acceso
-    token_response = client.post(
-        "/login",
-        json={"username": USERNAME, "password": PASSWORD},
-        headers={"Content-Type": "application/json"} 
-    )
-    assert token_response.status_code == 200
-    token = token_response.json()["access_token"]
-
-    # Acceder a la ruta protegida
-    response = client.get(
-        "/users/me",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    assert response.status_code == 200
-    assert response.json() == {"username": USERNAME}

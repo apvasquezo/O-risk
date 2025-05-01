@@ -6,10 +6,10 @@ from infrastructure.database.db_config import get_db
 from domain.repositories.user_repository import UserRepository
 from application.use_case.manage_user import (
     create_user,
-    get_user,
-    get_all_users,
-    update_user,
-    delete_user
+    get_user as get_user_use_case,
+    get_all_users as get_all_users_use_case,
+    update_user as update_user_use_case,
+    delete_user as delete_user_use_case
 )
 
 router = APIRouter()
@@ -20,41 +20,40 @@ class UserCreate(BaseModel):
     role_id: int
 
 class UserResponse(BaseModel):
-    id: int
+    id_user: int
     username: str
     role_id: int
-    
 
 @router.post("/users/", response_model=UserResponse)
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def create_user_1(user: UserCreate, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    created_user = await create_user(user, repository)
-    return UserResponse(id=created_user.id, username=created_user.username, role_id=created_user.role_id)
+    created_user = await create_user(user.username, user.password, user.role_id, repository)
+    return UserResponse(id=created_user.id_user, username=created_user.username, role_id=created_user.role_id)
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    user = await get_user(user_id, repository)
+    user = await get_user_use_case(user_id, repository)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return UserResponse(id=user.id, username=user.username, role_id=user.role_id)
+    return UserResponse(id_user=user.id_user, username=user.username, role_id=user.role_id)
 
 @router.get("/users/", response_model=List[UserResponse])
 async def read_users(db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    users = await get_all_users(repository)
-    return [UserResponse(id=user.id, username=user.username, role_id=user.role_id) for user in users]
+    users = await get_all_users_use_case(repository)
+    return [UserResponse(id_user=user.id_user, username=user.username, role_id=user.role_id) for user in users]
 
 @router.put("/users/{user_id}", response_model=UserResponse)
 async def update_user(user_id: int, user: UserCreate, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    updated_user = await update_user(user_id, user, repository)
+    updated_user = await update_user_use_case(user_id, user, repository)
     if updated_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    return UserResponse(id=updated_user.id, username=updated_user.username, role_id=updated_user.role_id)
+    return UserResponse(id_user=updated_user.id_user, username=updated_user.username, role_id=updated_user.role_id)
 
 @router.delete("/users/{user_id}", response_model=dict)
 async def delete_user(user_id: int, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    await delete_user(user_id, repository)
+    await delete_user_use_case(user_id, repository)
     return {"detail": "User deleted"}

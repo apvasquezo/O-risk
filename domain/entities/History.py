@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class History(BaseModel):
-    id:Optional[int]=None
+    id_history:Optional[int]=None
     eventLog_id:int
     control_id:int
     start_date:datetime

@@ -1,9 +1,9 @@
 from domain.entities.User import User
 from infrastructure.repositories.sqlalchemy_user_repository import SqlAlchemyUserRepository
 
-def create_user(username: str, password: str, role_id: int, repository: SqlAlchemyUserRepository):
+async def create_user(username: str, password: str, role_id: int, repository: SqlAlchemyUserRepository):
     user = User(username=username, password=password, role_id=role_id)
-    return repository.create_user(user)
+    return await repository.create_user(user)
 
 def get_user(user_id: int, repository: SqlAlchemyUserRepository):
     return repository.get_user(user_id)

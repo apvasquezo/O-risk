@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class User(BaseModel):
-    id:Optional[int]=None
+    id_user:Optional[int]=None
     username:str
     password:str
     role_id:int

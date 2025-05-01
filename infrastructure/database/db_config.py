@@ -6,6 +6,8 @@ from config import settings
 
 DATABASE_URL = settings.DATABASE_URL  # URL para conexiones asíncronas
 
+print("estamos en db_config",DATABASE_URL);
+
 # Crea el motor asíncrono
 engine = create_async_engine(DATABASE_URL, echo=True)
 
