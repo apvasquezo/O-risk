@@ -19,7 +19,7 @@ class Role(Base):
     id_role = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     state=Column(Boolean, nullable=False)
-    users = relationship("User", back_populates="role")
+    users = relationship("User", back_populates="role", lazy='joined')
     
 class User(Base):
     __tablename__ = "users"
@@ -28,7 +28,7 @@ class User(Base):
     username = Column(String(100), unique=True, nullable=False, index=True)
     password = Column(String(100), nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id_role"), nullable=False)
-    role = relationship("Role", back_populates="users") 
+    role = relationship("Role", back_populates="users", lazy='joined') 
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -37,9 +37,16 @@ class Cause(Base):
     
     id_cause = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String(255), nullable=False)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=False)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=False)
     event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
 
+class Consequence(Base):
+    __tablename__ = 'consequence'
+    
+    id_consequence = Column(Integer, primary_key=True, autoincrement=True)
+    description = Column(String(255), nullable=False)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=False)
+    event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
 class Channel(Base):
     __tablename__ = "channels"
     
@@ -59,7 +66,7 @@ class Event(Base):
     __tablename__ = 'events'
     
     id_event = Column(Integer, primary_key=True, autoincrement=True)
-    risk_type_id = Column(Integer, ForeignKey('risk_types.id_riskfactor'), nullable=False)
+    risk_type_id = Column(Integer, ForeignKey('risk_types.id_risktype'), nullable=False)
     factor = Column(String(255), nullable=True)
     description = Column(Text, nullable=False)
     probability_id = Column(Integer, ForeignKey('probability.level'), nullable=False)
@@ -78,10 +85,10 @@ class EventLog(Base):
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_riskfactor'), nullable=True)
-    product_id = Column(Integer, ForeignKey('products_services.id_service'), nullable=True)
+    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=True)
+    product_id = Column(Integer, ForeignKey('products_services.id_product'), nullable=True)
     process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
-    channel_id = Column(Integer, ForeignKey('channels.id_chanel'), nullable=True)
+    channel_id = Column(Integer, ForeignKey('channels.id_channel'), nullable=True)
     city = Column(String(100), nullable=True)
     responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
@@ -172,11 +179,13 @@ class Notification(Base):
     __tablename__ = 'notification'
     
     id_notify = Column(Integer, primary_key=True, autoincrement=True)
-    message= Column(String(255), nullable=False)
+    message = Column(String(255), nullable=False)
     suggestion_control = Column(String(255), nullable=False)
     date_send = Column(DateTime, nullable=False)
+    status = Column(String(50), nullable=False, default='pendiente')  # enviado, fallido, leído
+    type = Column(String(50), default='email')  # email, push, interna
     personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
-    eventlog_id=Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
+    eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
 
 class History(Base):
     __tablename__ = 'history'
@@ -217,3 +226,17 @@ class Evaluation(Base):
     next_date = Column(DateTime, nullable=False)
     description=Column(String(255), nullable=False)
     state=Column(String(50), nullable=True)
+    
+class Alert(Base):
+    __tablename__ = 'alert'
+
+    id_alert = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(100), nullable=False)  # Breve título de la alerta
+    message = Column(String(255), nullable=False)  # Contenido de la alerta
+    is_read = Column(Boolean, default=False)  # Indicador si ya fue leída
+    date_created = Column(DateTime, nullable=False)  # Fecha de creación
+    role_id = Column(String(50), nullable=False)  # Rol objetivo que verá la alerta (ej. 'Administrador', 'Supervisor')
+    type = Column(String(50), nullable=False)  # Tipo de alerta: 'evento', 'control', etc.
+    eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=True)
+    eventlog = relationship("EventLog",  back_populates="alert", lazy='joined')
+    control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=True)
