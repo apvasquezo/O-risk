@@ -9,6 +9,7 @@ from interfaces.controllers.control_controller import router as control_controll
 from interfaces.controllers.event_controller import router as event_controller
 from interfaces.controllers.probability_controller import router as probability_controller
 from interfaces.controllers.cause_controller import router as cause_controller
+from interfaces.controllers.consequence_controller import router as consequence_controller
 from interfaces.controllers.impact_controller import router as impact_controller
 from interfaces.controllers.tracking_controller import router as tracking_controller
 from interfaces.controllers.process_controller import router as process_controller
@@ -59,6 +60,7 @@ app.include_router(control_controller)
 app.include_router(event_controller)
 app.include_router(probability_controller)
 app.include_router(cause_controller)
+app.include_router(consequence_controller)
 app.include_router(impact_controller)
 app.include_router(tracking_controller)
 app.include_router(process_controller)
