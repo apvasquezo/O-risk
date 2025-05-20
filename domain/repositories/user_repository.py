@@ -19,7 +19,6 @@ class UserRepository:
         ).returning(ORMUser.id_user, ORMUser.username, ORMUser.role_id)
         try:
             result = await self.session.execute(stmt)
-            print(result)
             await self.session.commit()
             row = result.fetchone()
             if row:
@@ -36,7 +35,7 @@ class UserRepository:
     async def get_user(self, user_id: int) -> Optional[UserEntity]:
         stmt = select(ORMUser).where(ORMUser.id_user == user_id)
         result = await self.session.execute(stmt)
-        orm_user = result.scalar_one_or_none()
+        orm_user = result.unique().scalar_one_or_none()
         if orm_user:
             return UserEntity(
                 id_user=orm_user.id_user, 
@@ -47,13 +46,11 @@ class UserRepository:
         return None
 
     async def get_user_username(self, username: str) -> Optional[UserEntity]:
-        print(str(username))
         stmt = select(ORMUser).where(ORMUser.username == username)
-        print(str(stmt))
         result = await self.session.execute(stmt)
         print(str(result))
-        orm_user = result.scalar_one_or_none()
-        
+        orm_user = result.unique().scalar_one_or_none()
+        print(str(orm_user))
         if orm_user:
             return UserEntity(
                 id_user=orm_user.id_user,
@@ -66,7 +63,7 @@ class UserRepository:
     async def get_all_users(self) -> List[UserEntity]:
         stmt = select(ORMUser)
         result = await self.session.execute(stmt)
-        orm_users = result.scalars().all()
+        orm_users = result.unique().scalars().all()
         return [
             UserEntity(
                 id_user=u.id_user, 

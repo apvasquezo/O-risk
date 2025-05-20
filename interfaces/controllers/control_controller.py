@@ -21,7 +21,7 @@ class ControlCreate(BaseModel):
     responsible_id: int
 
 class ControlResponse(BaseModel):
-    id: int
+    id_control: int
     control_type_id: int
     description: str
     frequency: Optional[str]
@@ -32,7 +32,7 @@ async def create_control_endpoint(control: ControlCreate, db: AsyncSession = Dep
     repository = ControlRepository(db)
     created_control = await create_control(control, repository)
     return ControlResponse(
-        id=created_control.id,
+        id_control=created_control.id_control,
         control_type_id=created_control.control_type_id,
         description=created_control.description,
         frequency=created_control.frequency,
@@ -46,7 +46,7 @@ async def read_control_endpoint(control_id: int, db: AsyncSession = Depends(get_
     if not control:
         raise HTTPException(status_code=404, detail="Control not found")
     return ControlResponse(
-        id=control.id,
+        id_control=control.id_control,
         control_type_id=control.control_type_id,
         description=control.description,
         frequency=control.frequency,
@@ -59,7 +59,7 @@ async def read_all_controls_endpoint(db: AsyncSession = Depends(get_db)):
     controls = await get_all_controls(repository)
     return [
         ControlResponse(
-            id=c.id,
+            id_control=c.id_control,
             control_type_id=c.control_type_id,
             description=c.description,
             frequency=c.frequency,
@@ -74,7 +74,7 @@ async def update_control_endpoint(control_id: int, control: ControlCreate, db: A
     if not updated_control:
         raise HTTPException(status_code=404, detail="Control not found")
     return ControlResponse(
-        id=updated_control.id,
+        id_control=updated_control.id_control,
         control_type_id=updated_control.control_type_id,
         description=updated_control.description,
         frequency=updated_control.frequency,

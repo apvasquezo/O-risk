@@ -14,14 +14,16 @@ class RiskTypeRepository:
         stmt = insert(RiskType).values(
             category_id=risk_type.category_id,
             description=risk_type.description
-        ).returning(RiskType.id, RiskType.category_id, RiskType.description)
+        ).returning(RiskType.id_risktype, RiskType.category_id, RiskType.description)
+        print ("creando bd", str(stmt))
         try:
             result = await self.session.execute(stmt)
+            print ("dentro del try", str(result))
             await self.session.commit()
             row = result.fetchone()
             if row:
                 return RiskTypeEntity(
-                    id=row.id, 
+                    id_risktype=row.id_risktype, 
                     category_id=row.category_id, 
                     description=row.description
                 )
@@ -30,12 +32,12 @@ class RiskTypeRepository:
             raise ValueError("Risk Type already exists or invalid category ID") from e
 
     async def get_risk_type(self, risk_type_id: int) -> Optional[RiskTypeEntity]:
-        stmt = select(RiskType).where(RiskType.id == risk_type_id)
+        stmt = select(RiskType).where(RiskType.id_risktype == risk_type_id)
         result = await self.session.execute(stmt)
         risk_type = result.scalar_one_or_none()
         if risk_type:
             return RiskTypeEntity(
-                id=risk_type.id,
+                id_risktype=risk_type.id_risktype,
                 category_id=risk_type.category_id,
                 description=risk_type.description
             )
@@ -47,31 +49,31 @@ class RiskTypeRepository:
         risk_types = result.scalars().all()
         return [
             RiskTypeEntity(
-                id=risk.id, 
+                id_risktype=risk.id_risktype, 
                 category_id=risk.category_id, 
                 description=risk.description
             ) for risk in risk_types
         ]
 
     async def update_risk_type(self, risk_type_id: int, risk_type: RiskTypeEntity) -> Optional[RiskTypeEntity]:
-        stmt = update(RiskType).where(RiskType.id == risk_type_id).values(
+        stmt = update(RiskType).where(RiskType.id_risktype == risk_type_id).values(
             category_id=risk_type.category_id,
             description=risk_type.description
-        ).returning(RiskType.id, RiskType.category_id, RiskType.description)
+        ).returning(RiskType.id_risktype, RiskType.category_id, RiskType.description)
 
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return RiskTypeEntity(
-                id=row.id, 
+                id_risktype=row.id_risktype, 
                 category_id=row.category_id, 
                 description=row.description
             )
         return None
 
     async def delete_risk_type(self, risk_type_id: int) -> None:
-        stmt = delete(RiskType).where(RiskType.id == risk_type_id)
+        stmt = delete(RiskType).where(RiskType.id_risktype == risk_type_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

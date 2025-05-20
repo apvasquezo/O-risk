@@ -13,6 +13,7 @@ router = APIRouter()
 class UserLogin(BaseModel):
     username: str
     password: str
+    role_id:int
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -43,4 +44,8 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     token = create_access_token({"sub": db_user.username, "role": db_user.role_id})
     #token = create_access_token({"sub": db_user.username})
     print("Authentication successful.")
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "role": db_user.role_id  # Agregar este campo
+    }

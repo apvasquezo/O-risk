@@ -111,7 +111,7 @@ class Macroprocess(Base):
 class Personal(Base):
     __tablename__ = 'personal'
     
-    id_personal = Column(Integer, primary_key=True) #esta debe ser la cedula del empleado
+    id_personal = Column(String(15), primary_key=True) #esta debe ser la cedula del empleado
     name = Column(String(100), nullable=False)
     position = Column(String(100), nullable=False)
     area = Column(String(100), nullable=True)
@@ -238,5 +238,5 @@ class Alert(Base):
     role_id = Column(String(50), nullable=False)  # Rol objetivo que verá la alerta (ej. 'Administrador', 'Supervisor')
     type = Column(String(50), nullable=False)  # Tipo de alerta: 'evento', 'control', etc.
     eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=True)
-    eventlog = relationship("EventLog",  back_populates="alert", lazy='joined')
+    #eventlog = relationship("EventLog",  back_populates="alert", lazy='joined')
     control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=True)

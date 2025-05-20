@@ -20,7 +20,7 @@ class CauseCreate(BaseModel):
     event_id: int
 
 class CauseResponse(BaseModel):
-    id: int
+    id_cause: int
     description: str
     risk_factor_id: int
     event_id: int

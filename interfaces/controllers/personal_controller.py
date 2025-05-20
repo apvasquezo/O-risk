@@ -16,7 +16,7 @@ router = APIRouter()
 
 # Schemas para las solicitudes y respuestas
 class PersonalCreate(BaseModel):
-    id: int
+    id_personal: str
     name: str
     position: str
     area: Optional[str]
@@ -24,7 +24,7 @@ class PersonalCreate(BaseModel):
     email: Optional[str]
 
 class PersonalResponse(BaseModel):
-    id: int
+    id_personal: str
     name: str
     position: str
     area: Optional[str]
@@ -32,11 +32,11 @@ class PersonalResponse(BaseModel):
     email: Optional[str]
 
 @router.post("/personal/", response_model=PersonalResponse)
-async def create_personal(personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    created_personal = await repository.create_personal(personal)
+    created_personal = await create_personal(personal, repository)
     return PersonalResponse(
-        id=created_personal.id,
+        id_personal=created_personal.id_personal,
         name=created_personal.name,
         position=created_personal.position,
         area=created_personal.area,
@@ -45,13 +45,13 @@ async def create_personal(personal: PersonalCreate, db: AsyncSession = Depends(g
     )
 
 @router.get("/personal/{personal_id}", response_model=PersonalResponse)
-async def read_personal(personal_id: int, db: AsyncSession = Depends(get_db)):
+async def read_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    personal = await repository.get_personal(personal_id)
+    personal = await get_personal(personal_id, repository)
     if personal is None:
         raise HTTPException(status_code=404, detail="Personal not found")
     return PersonalResponse(
-        id=personal.id,
+        id_personal=personal.id_personal,
         name=personal.name,
         position=personal.position,
         area=personal.area,
@@ -62,10 +62,10 @@ async def read_personal(personal_id: int, db: AsyncSession = Depends(get_db)):
 @router.get("/personal/", response_model=List[PersonalResponse])
 async def read_all_personal(db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    personals = await repository.get_all_personal()
+    personals = await get_all_personal(repository)
     return [
         PersonalResponse(
-            id=personal.id,
+            id_personal=personal.id_personal,
             name=personal.name,
             position=personal.position,
             area=personal.area,
@@ -75,13 +75,13 @@ async def read_all_personal(db: AsyncSession = Depends(get_db)):
     ]
 
 @router.put("/personal/{personal_id}", response_model=PersonalResponse)
-async def update_personal(personal_id: int, personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+async def update_personal(personal_id: str, personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    updated_personal = await repository.update_personal(personal_id, personal)
+    updated_personal = await update_personal(personal_id, personal, repository)
     if updated_personal is None:
         raise HTTPException(status_code=404, detail="Personal not found")
     return PersonalResponse(
-        id=updated_personal.id,
+        id_personal=updated_personal.id_personal,
         name=updated_personal.name,
         position=updated_personal.position,
         area=updated_personal.area,
@@ -90,10 +90,10 @@ async def update_personal(personal_id: int, personal: PersonalCreate, db: AsyncS
     )
 
 @router.delete("/personal/{personal_id}", response_model=dict)
-async def delete_personal(personal_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
     try:
-        await repository.delete_personal(personal_id)
+        await delete_personal(personal_id, repository)
         return {"detail": "Personal record deleted"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

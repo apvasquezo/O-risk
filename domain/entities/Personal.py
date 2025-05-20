@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 class Personal(BaseModel):
-    id_personal: Optional[int]=None
+    id_personal: str
     name:str
     post:str
     area:Optional[str]

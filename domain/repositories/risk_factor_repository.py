@@ -14,14 +14,14 @@ class RiskFactorRepository:
         stmt = insert(RiskFactor).values(
             risk_type_id=risk_factor.risk_type_id,
             description=risk_factor.description
-        ).returning(RiskFactor.id, RiskFactor.risk_type_id, RiskFactor.description)
+        ).returning(RiskFactor.id_factor, RiskFactor.risk_type_id, RiskFactor.description)
         try:
             result = await self.session.execute(stmt)
             await self.session.commit()
             row = result.fetchone()
             if row:
                 return RiskFactorEntity(
-                    id=row.id, 
+                    id_factor=row.id_factor, 
                     risk_type_id=row.risk_type_id, 
                     description=row.description
                 )
@@ -30,12 +30,12 @@ class RiskFactorRepository:
             raise ValueError("Risk Factor already exists or invalid Risk Type ID") from e
 
     async def get_risk_factor(self, risk_factor_id: int) -> Optional[RiskFactorEntity]:
-        stmt = select(RiskFactor).where(RiskFactor.id == risk_factor_id)
+        stmt = select(RiskFactor).where(RiskFactor.id_factor == risk_factor_id)
         result = await self.session.execute(stmt)
         risk_factor = result.scalar_one_or_none()
         if risk_factor:
             return RiskFactorEntity(
-                id=risk_factor.id,
+                id_factor=risk_factor.id_factor,
                 risk_type_id=risk_factor.risk_type_id,
                 description=risk_factor.description
             )
@@ -47,30 +47,30 @@ class RiskFactorRepository:
         risk_factors = result.scalars().all()
         return [
             RiskFactorEntity(
-                id=risk.id, 
+                id_factor=risk.id_factor, 
                 risk_type_id=risk.risk_type_id, 
                 description=risk.description
             ) for risk in risk_factors
         ]
 
     async def update_risk_factor(self, risk_factor_id: int, risk_factor: RiskFactorEntity) -> Optional[RiskFactorEntity]:
-        stmt = update(RiskFactor).where(RiskFactor.id == risk_factor_id).values(
+        stmt = update(RiskFactor).where(RiskFactor.id_factor == risk_factor_id).values(
             risk_type_id=risk_factor.risk_type_id,
             description=risk_factor.description
-        ).returning(RiskFactor.id, RiskFactor.risk_type_id, RiskFactor.description)
+        ).returning(RiskFactor.id_factor, RiskFactor.risk_type_id, RiskFactor.description)
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return RiskFactorEntity(
-                id=row.id, 
+                id_factor=row.id_factor, 
                 risk_type_id=row.risk_type_id, 
                 description=row.description
             )
         return None
 
     async def delete_risk_factor(self, risk_factor_id: int) -> None:
-        stmt = delete(RiskFactor).where(RiskFactor.id == risk_factor_id)
+        stmt = delete(RiskFactor).where(RiskFactor.id_factor == risk_factor_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:
