@@ -19,7 +19,7 @@ class RiskFactorCreate(BaseModel):
     description: str
 
 class RiskFactorResponse(BaseModel):
-    id: int
+    id_factor: int
     risk_type_id: int
     description: str
 
@@ -28,7 +28,7 @@ async def create_risk_factor_endpoint(risk_factor: RiskFactorCreate, db: AsyncSe
     repository = RiskFactorRepository(db)
     created_risk_factor = await create_risk_factor(risk_factor, repository)
     return RiskFactorResponse(
-        id=created_risk_factor.id,
+        id_factor=created_risk_factor.id_factor,
         risk_type_id=created_risk_factor.risk_type_id,
         description=created_risk_factor.description
     )
@@ -40,7 +40,7 @@ async def read_risk_factor_endpoint(risk_factor_id: int, db: AsyncSession = Depe
     if not risk_factor:
         raise HTTPException(status_code=404, detail="Risk Factor not found")
     return RiskFactorResponse(
-        id=risk_factor.id,
+        id_factor=risk_factor.id_factor,
         risk_type_id=risk_factor.risk_type_id,
         description=risk_factor.description
     )
@@ -50,8 +50,11 @@ async def read_all_risk_factors_endpoint(db: AsyncSession = Depends(get_db)):
     repository = RiskFactorRepository(db)
     risk_factors = await get_all_risk_factors(repository)
     return [
-        RiskFactorResponse(id=factor.id, risk_type_id=factor.risk_type_id, description=factor.description)
-        for factor in risk_factors
+        RiskFactorResponse(
+            id_factor=factor.id_factor, 
+            risk_type_id=factor.risk_type_id, 
+            description=factor.description
+        ) for factor in risk_factors
     ]
 
 @router.put("/risk-factors/{risk_factor_id}", response_model=RiskFactorResponse)
@@ -61,7 +64,7 @@ async def update_risk_factor_endpoint(risk_factor_id: int, risk_factor: RiskFact
     if not updated_risk_factor:
         raise HTTPException(status_code=404, detail="Risk Factor not found")
     return RiskFactorResponse(
-        id=updated_risk_factor.id,
+        id_factor=updated_risk_factor.id_factor,
         risk_type_id=updated_risk_factor.risk_type_id,
         description=updated_risk_factor.description
     )

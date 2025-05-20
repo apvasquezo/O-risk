@@ -12,7 +12,7 @@ class ChannelCreate(BaseModel):
     description: str
 
 class ChannelResponse(BaseModel):
-    id: int
+    id_channel: int
     description: str
 
 @router.post("/channels/", response_model=ChannelResponse)

@@ -25,20 +25,25 @@ class RoleRepository:
     async def get_role(self, role_id: int) -> Optional[RoleEntity]:
         stmt = select(Role).where(Role.id_role == role_id)
         result = await self.session.execute(stmt)
-        role = result.scalar_one_or_none()
-        return role
+        role = result.unique().scalar_one_or_none()
+        if role:
+            return RoleEntity(id_role=role.id_role, name=role.name, state=role.state)
+        return None
 
     async def get_all_roles(self) -> List[RoleEntity]:
         stmt = select(Role)
         result = await self.session.execute(stmt)
-        roles = result.scalars().all()
+        roles = result.unique().scalars().all()
         return roles
 
     async def update_role(self, role_id: int, role: RoleEntity) -> Optional[RoleEntity]:
+        existing_role = await self.get_role(role_id)
+        if not existing_role:
+            raise ValueError(f"Role with id {role_id} not found")
         stmt = update(Role).where(Role.id_role == role_id).values(
             name=role.name, 
             state=role.state
-            ).returning(Role.id, Role.name, Role.state)
+        ).returning(Role.id_role, Role.name, Role.state)
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()

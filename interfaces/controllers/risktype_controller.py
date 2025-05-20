@@ -19,7 +19,7 @@ class RiskTypeCreate(BaseModel):
     description: str
 
 class RiskTypeResponse(BaseModel):
-    id: int
+    id_risktype: int
     category_id: int
     description: str
 
@@ -28,7 +28,7 @@ async def create_risk_type_endpoint(risk_type: RiskTypeCreate, db: AsyncSession 
     repository = RiskTypeRepository(db)
     created_risk_type = await create_risk_type(risk_type, repository)
     return RiskTypeResponse(
-        id=created_risk_type.id,
+        id_risktype=created_risk_type.id_risktype,
         category_id=created_risk_type.category_id,
         description=created_risk_type.description
     )
@@ -40,7 +40,7 @@ async def read_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(
     if not risk_type:
         raise HTTPException(status_code=404, detail="Risk Type not found")
     return RiskTypeResponse(
-        id=risk_type.id,
+        id_risktype=risk_type.id_risktype,
         category_id=risk_type.category_id,
         description=risk_type.description
     )
@@ -50,7 +50,7 @@ async def read_all_risk_types_endpoint(db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
     risk_types = await get_all_risk_types(repository)
     return [
-        RiskTypeResponse(id=risk.id, category_id=risk.category_id, description=risk.description)
+        RiskTypeResponse(id_risktype=risk.id_risktype, category_id=risk.category_id, description=risk.description)
         for risk in risk_types
     ]
 
@@ -61,7 +61,7 @@ async def update_risk_type_endpoint(risk_type_id: int, risk_type: RiskTypeCreate
     if not updated_risk_type:
         raise HTTPException(status_code=404, detail="Risk Type not found")
     return RiskTypeResponse(
-        id=updated_risk_type.id,
+        id_risktype=updated_risk_type.id_risktype,
         category_id=updated_risk_type.category_id,
         description=updated_risk_type.description
     )
