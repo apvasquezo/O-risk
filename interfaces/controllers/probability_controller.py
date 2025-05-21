@@ -18,14 +18,13 @@ class ProbabilityCreate(BaseModel):
     level: int
     description: str
     definition: str
-    criteria_percentage: int
+    criteria_por: float
 
 class ProbabilityResponse(BaseModel):
-    id: int
     level: int
     description: str
     definition: str
-    criteria_percentage: int
+    criteria_por: float
 
 @router.post("/probabilities/", response_model=ProbabilityResponse)
 async def create_probability_endpoint(probability: ProbabilityCreate, db: AsyncSession = Depends(get_db)):

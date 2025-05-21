@@ -14,10 +14,12 @@ class ProcessRepository:
         stmt = insert(ORMProcess).values(
             macroprocess_id=process.macroprocess_id,
             description=process.description,
+            personal_id=process.personal_id,
         ).returning(
             ORMProcess.id_process, 
             ORMProcess.macroprocess_id, 
-            ORMProcess.description
+            ORMProcess.description,
+            ORMProcess.personal_id
         )
         try:
             result = await self.session.execute(stmt)
@@ -27,7 +29,8 @@ class ProcessRepository:
                 return ProcessEntity(
                     id_process=row.id_process, 
                     macroprocess_id=row.macroprocess_id, 
-                    description=row.description
+                    description=row.description,
+                    personal_id=row.personal_id,
                 )
         except IntegrityError as e:
             await self.session.rollback()
@@ -41,7 +44,8 @@ class ProcessRepository:
             return ProcessEntity(
                 id_process=orm_process.id_process, 
                 macroprocess_id=orm_process.macroprocess_id, 
-                description=orm_process.description
+                description=orm_process.description,
+                personal_id=orm_process.personal_id
             )
         return None
 
@@ -53,7 +57,8 @@ class ProcessRepository:
             ProcessEntity(
                 id_process=p.id_process, 
                 macroprocess_id=p.macroprocess_id, 
-                description=p.description
+                description=p.description,
+                personal_id=p.personal_id
             ) for p in orm_processes
         ]
 
@@ -61,10 +66,12 @@ class ProcessRepository:
         stmt = update(ORMProcess).where(ORMProcess.id_process == process_id).values(
             macroprocess_id=process.macroprocess_id,
             description=process.description,
+            personal_id=process.personal_id,
         ).returning(
             ORMProcess.id_process, 
             ORMProcess.macroprocess_id, 
-            ORMProcess.description
+            ORMProcess.description,
+            ORMProcess.personal_id
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
@@ -73,7 +80,8 @@ class ProcessRepository:
             return ProcessEntity(
                 id_process=row.id_process, 
                 macroprocess_id=row.macroprocess_id, 
-                description=row.description
+                description=row.description,
+                personal=row.personal_id
             )
         return None
 

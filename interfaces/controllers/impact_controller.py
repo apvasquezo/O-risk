@@ -18,14 +18,13 @@ class ImpactCreate(BaseModel):
     level: int
     description: str
     definition: str
-    criteria_smlv: int
+    criteria_smlv: float
 
 class ImpactResponse(BaseModel):
-    id: int
     level: int
     description: str
     definition: str
-    criteria_smlv: int
+    criteria_smlv: float
 
 @router.post("/impacts/", response_model=ImpactResponse)
 async def create_impact_endpoint(impact: ImpactCreate, db: AsyncSession = Depends(get_db)):

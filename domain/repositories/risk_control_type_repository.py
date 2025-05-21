@@ -42,7 +42,7 @@ class RiskControlTypeRepository:
     async def update_risk_control_type(self, control_type_id: int, control_type: RiskControlTypesEntity) -> Optional[RiskControlTypesEntity]:
         stmt = update(RiskControlType).where(RiskControlType.id_controltype == control_type_id).values(
             description=control_type.description
-        ).returning(RiskControlType.id, RiskControlType.description)
+        ).returning(RiskControlType.id_controltype, RiskControlType.description)
 
         result = await self.session.execute(stmt)
         await self.session.commit()

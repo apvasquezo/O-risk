@@ -18,14 +18,14 @@ class ControlCreate(BaseModel):
     control_type_id: int
     description: str
     frequency: Optional[str] = None
-    responsible_id: int
+    responsible_id: str
 
 class ControlResponse(BaseModel):
     id_control: int
     control_type_id: int
     description: str
     frequency: Optional[str]
-    responsible_id: int
+    responsible_id: str
 
 @router.post("/controls/", response_model=ControlResponse)
 async def create_control_endpoint(control: ControlCreate, db: AsyncSession = Depends(get_db)):

@@ -60,14 +60,14 @@ class Control(Base):
     control_type_id = Column(Integer, ForeignKey('risk_control_types.id_controltype'), nullable=False)
     description = Column(String(255), nullable=False)
     frequency = Column(String(100), nullable=True)
-    responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    responsible_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
 
 class Event(Base):
     __tablename__ = 'events'
     
     id_event = Column(Integer, primary_key=True, autoincrement=True)
     risk_type_id = Column(Integer, ForeignKey('risk_types.id_risktype'), nullable=False)
-    factor = Column(String(255), nullable=True)
+    factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=True)
     description = Column(Text, nullable=False)
     probability_id = Column(Integer, ForeignKey('probability.level'), nullable=False)
     impact_id = Column(Integer, ForeignKey('impact.level'), nullable=False)
@@ -90,7 +90,7 @@ class EventLog(Base):
     process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
     channel_id = Column(Integer, ForeignKey('channels.id_channel'), nullable=True)
     city = Column(String(100), nullable=True)
-    responsible_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=True)
+    responsible_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
 
 class Impact(Base):
@@ -124,7 +124,7 @@ class Probability(Base):
     level = Column(Integer, primary_key=True, nullable=False)
     description = Column(String(100), nullable=False)
     definition = Column(Text)
-    criteria_smlv = Column(Numeric(5, 2))
+    criteria_por = Column(Numeric(5, 2))
 
 class Process(Base):
     __tablename__ = "processes"
@@ -132,7 +132,7 @@ class Process(Base):
     id_process = Column(Integer, primary_key=True, index=True, autoincrement=True)
     macroprocess_id = Column(Integer, ForeignKey('macroprocesses.id_macro'), nullable=False)
     description = Column(String(255), nullable=False)
-    personal_id= Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    personal_id= Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
 
 class Product(Base):
     __tablename__ = "products_services"
@@ -170,7 +170,7 @@ class Tracking(Base):
     __tablename__ = 'tracking'
     
     id_tracking = Column(Integer, primary_key=True, autoincrement=True)
-    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=False)
     event_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
     tracking_date = Column(DateTime, nullable=False)
@@ -184,7 +184,7 @@ class Notification(Base):
     date_send = Column(DateTime, nullable=False)
     status = Column(String(50), nullable=False, default='pendiente')  # enviado, fallido, leído
     type = Column(String(50), default='email')  # email, push, interna
-    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
 
 class History(Base):
@@ -204,7 +204,7 @@ class Plan_action(Base):
     description=Column(String(255), nullable=False)
     star_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
-    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     state=Column(String(50), nullable=True)
     
 class Control_action(Base):
@@ -222,7 +222,7 @@ class Evaluation(Base):
     eval_date=Column(DateTime, nullable=False)
     n_probability=Column(Integer, ForeignKey('probability.level'), nullable=False)
     n_impact=Column(Integer, ForeignKey('impact.level'), nullable=False)
-    personal_id = Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
+    personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     next_date = Column(DateTime, nullable=False)
     description=Column(String(255), nullable=False)
     state=Column(String(50), nullable=True)

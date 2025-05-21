@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_db
 from domain.repositories.product_repository import ProductRepository
 from application.use_case.manage_product import (
-    create_product_service,
-    get_product_service,
-    get_all_products_services,
-    update_product_service,
-    delete_product_service
+    create_product,
+    get_product,
+    get_all_products,
+    update_product,
+    delete_product
 )
 
 router = APIRouter()
@@ -18,39 +18,52 @@ class ProductServiceCreate(BaseModel):
     description: str
 
 class ProductServiceResponse(BaseModel):
-    id: int
+    id_product: int
     description: str
 
 @router.post("/products/", response_model=ProductServiceResponse)
-async def create_product(product: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
+async def create_product_endpoint(product: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    created_product = await create_product_service(product,repository)
-    return ProductServiceResponse(id=created_product.id, description=created_product.description)
+    created_product = await create_product(product,  repository)
+    return ProductServiceResponse(
+        id_product=created_product.id_product, 
+        description=created_product.description
+    )
 
 @router.get("/products/{product_id}", response_model=ProductServiceResponse)
-async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
+async def get_product_endpoint(product_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    product_service = await get_product_service(product_id, repository)
+    product_service = await get_product(product_id, repository)
     if product_service is None:
         raise HTTPException(status_code=404, detail="Product_Service not found")
-    return ProductServiceResponse(id=product_service.id, description=product_service.description)
+    return ProductServiceResponse(
+        id_product=product_service.id_product, 
+        description=product_service.description
+    )
 
 @router.get("/products/", response_model=List[ProductServiceResponse])
-async def get_all_products(db: AsyncSession = Depends(get_db)):
+async def read_all_products(db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    products_services = await get_all_products_services(repository)
-    return [ProductServiceResponse(id=ps.id, description=ps.description) for ps in products_services]
+    products_services = await get_all_products(repository)
+    return [ProductServiceResponse(
+        id_product=ps.id_product, 
+        description=ps.description
+        ) for ps in products_services
+    ]
 
 @router.put("/products_services/{product_service_id}", response_model=ProductServiceResponse)
-async def update_product(product_id: int, product_service: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
+async def update_product_endpoint(product_id: int, product_service: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    updated_product = await update_product_service(product_id, product_service, repository)
+    updated_product = await update_product(product_id, product_service, repository)
     if updated_product is None:
         raise HTTPException(status_code=404, detail="Product_Service not found")
-    return ProductServiceResponse(id=updated_product.id, description=updated_product.description)
+    return ProductServiceResponse(
+        id_product=updated_product.id_product, 
+        description=updated_product.description
+    )
 
 @router.delete("/products_services/{product_service_id}", response_model=dict)
-async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_product_endpoint(product_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    await delete_product_service(product_id, repository)
+    await delete_product(product_id, repository)
     return {"detail": "Product_Service deleted"}
