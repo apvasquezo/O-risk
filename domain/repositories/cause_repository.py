@@ -37,7 +37,7 @@ class CauseRepository:
             raise ValueError("Cause already exists") from e
         
     async def get_cause(self, cause_id:int)->Optional[CauseEntity]:
-        stmt = select(Cause).where(Cause.id == cause_id)
+        stmt = select(Cause).where(Cause.id_cause == cause_id)
         result = await self.session.execute(stmt)
         cause= result.scalar_one_or_none()
         if cause:

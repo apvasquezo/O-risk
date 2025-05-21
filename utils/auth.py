@@ -1,11 +1,16 @@
 import jwt
 import hashlib
 from datetime import datetime, timedelta
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+
 
 # Configuración para JWT
 SECRET_KEY = "tu_secreto_super_seguro"  # Cambia esto por una clave secreta más segura
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Función para hashear una contraseña usando SHA-256
 def hash_password(password: str) -> str:
@@ -31,13 +36,24 @@ def create_access_token(data: dict) -> str:
 
 # Función para decodificar un token
 def decode_token(token: str) -> dict | None:
-    """Decodifica un token JWT y verifica su validez."""
+    """Decodifica un token JWT y verifica su validez, incluyendo roles."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return payload  # payload debe incluir "role" y otros datos
     except jwt.ExpiredSignatureError:
         print("Error: El token ha expirado.")
         return None
     except jwt.PyJWTError:
         print("Error: Token inválido.")
         return None
+   
+def role_required(required_role: str):
+    def role_dependency(token: str = Depends(oauth2_scheme)):
+        payload = decode_token(token)
+        if not payload:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        user_role = payload.get("role")
+        if user_role != required_role:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        return payload
+    return role_dependency

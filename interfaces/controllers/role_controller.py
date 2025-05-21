@@ -12,7 +12,7 @@ class RoleCreate(BaseModel):
     state:bool
 
 class RoleResponse(BaseModel):
-    id: int
+    id_role: int
     name: str
     state: bool
 
@@ -20,7 +20,7 @@ class RoleResponse(BaseModel):
 async def create_role(role: RoleCreate, db: AsyncSession = Depends(get_db)):
     repository = RoleRepository(db)
     created_role = await repository.create_role(role)
-    return RoleResponse(id=created_role.id, name=created_role.name, state=created_role.state)
+    return RoleResponse(id_role=created_role.id_role, name=created_role.name, state=created_role.state)
 
 @router.get("/roles/{role_id}", response_model=RoleResponse)
 async def read_role(role_id: int, db: AsyncSession = Depends(get_db)):
@@ -28,13 +28,13 @@ async def read_role(role_id: int, db: AsyncSession = Depends(get_db)):
     role = await repository.get_role(role_id)
     if role is None:
         raise HTTPException(status_code=404, detail="Role not found")
-    return RoleResponse(id=role.id, name=role.name, state=role.state)
+    return RoleResponse(id_role=role.id_role, name=role.name, state=role.state)
 
 @router.get("/roles/", response_model=List[RoleResponse])
 async def read_roles(db: AsyncSession = Depends(get_db)):
     repository = RoleRepository(db)
     roles = await repository.get_all_roles()
-    return [RoleResponse(id=role.id, name=role.name, state=role.state) for role in roles]
+    return [RoleResponse(id_role=role.id_role, name=role.name, state=role.state) for role in roles]
 
 @router.put("/roles/{role_id}", response_model=RoleResponse)
 async def update_role(role_id: int, role: RoleCreate, db: AsyncSession = Depends(get_db)):
@@ -42,7 +42,7 @@ async def update_role(role_id: int, role: RoleCreate, db: AsyncSession = Depends
     updated_role = await repository.update_role(role_id, role)
     if updated_role is None:
         raise HTTPException(status_code=404, detail="Role not found")
-    return RoleResponse(id=updated_role.id, name=updated_role.name, state=updated_role.state)
+    return RoleResponse(id_role=updated_role.id_role, name=updated_role.name, state=updated_role.state)
 
 # no eliminar el rol sino cambiar el estado activo e inactivo
 @router.delete("/roles/{role_id}", response_model=dict)

@@ -36,7 +36,7 @@ class UserRepository:
     async def get_user(self, user_id: int) -> Optional[UserEntity]:
         stmt = select(ORMUser).where(ORMUser.id_user == user_id)
         result = await self.session.execute(stmt)
-        orm_user = result.scalar_one_or_none()
+        orm_user = result.unique().scalar_one_or_none()
         if orm_user:
             return UserEntity(
                 id_user=orm_user.id_user, 
@@ -52,7 +52,7 @@ class UserRepository:
         print(str(stmt))
         result = await self.session.execute(stmt)
         print(str(result))
-        orm_user = result.scalar_one_or_none()
+        orm_user = result.unique().scalar_one_or_none()
         
         if orm_user:
             return UserEntity(
@@ -66,7 +66,7 @@ class UserRepository:
     async def get_all_users(self) -> List[UserEntity]:
         stmt = select(ORMUser)
         result = await self.session.execute(stmt)
-        orm_users = result.scalars().all()
+        orm_users = result.unique().scalars().all()
         return [
             UserEntity(
                 id_user=u.id_user, 

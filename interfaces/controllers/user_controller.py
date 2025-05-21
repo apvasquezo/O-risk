@@ -28,7 +28,7 @@ class UserResponse(BaseModel):
 async def create_user_1(user: UserCreate, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
     created_user = await create_user(user.username, user.password, user.role_id, repository)
-    return UserResponse(id=created_user.id_user, username=created_user.username, role_id=created_user.role_id)
+    return UserResponse(id_user=created_user.id_user, username=created_user.username, role_id=created_user.role_id)
 
 @router.get("/users/{user_id}", response_model=UserResponse)
 async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
