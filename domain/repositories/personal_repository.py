@@ -12,17 +12,16 @@ class PersonalRepository:
 
     async def create_personal(self, personal: PersonalEntity) -> PersonalEntity:
         stmt = insert(ORMPersonal).values(
+            id_personal=personal.id_personal,
             name=personal.name,
             position=personal.position,
             area=personal.area,
-            process_id=personal.process_id,
             email=personal.email
         ).returning(
             ORMPersonal.id_personal,
             ORMPersonal.name,
             ORMPersonal.position,
             ORMPersonal.area,
-            ORMPersonal.process_id,
             ORMPersonal.email
         )
         try:
@@ -35,7 +34,6 @@ class PersonalRepository:
                     name=row.name,
                     position=row.position,
                     area=row.area,
-                    process_id=row.process_id,
                     email=row.email
                 )
         except IntegrityError as e:
@@ -52,7 +50,6 @@ class PersonalRepository:
                 name=orm_personal.name,
                 position=orm_personal.position,
                 area=orm_personal.area,
-                process_id=orm_personal.process_id,
                 email=orm_personal.email
             )
         return None
@@ -67,7 +64,6 @@ class PersonalRepository:
                 name=p.name,
                 position=p.position,
                 area=p.area,
-                process_id=p.process_id,
                 email=p.email
             ) for p in orm_personals
         ]
@@ -77,14 +73,12 @@ class PersonalRepository:
             name=personal.name,
             position=personal.position,
             area=personal.area,
-            process_id=personal.process_id,
             email=personal.email
         ).returning(
             ORMPersonal.id_personal,
             ORMPersonal.name,
             ORMPersonal.position,
             ORMPersonal.area,
-            ORMPersonal.process_id,
             ORMPersonal.email
         )
         result = await self.session.execute(stmt)
@@ -96,7 +90,6 @@ class PersonalRepository:
                 name=row.name,
                 position=row.position,
                 area=row.area,
-                process_id=row.process_id,
                 email=row.email
             )
         return None

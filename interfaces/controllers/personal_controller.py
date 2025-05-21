@@ -20,7 +20,6 @@ class PersonalCreate(BaseModel):
     name: str
     position: str
     area: Optional[str]
-    process_id: Optional[int]
     email: Optional[str]
 
 class PersonalResponse(BaseModel):
@@ -28,7 +27,6 @@ class PersonalResponse(BaseModel):
     name: str
     position: str
     area: Optional[str]
-    process_id: Optional[int]
     email: Optional[str]
 
 @router.post("/personal/", response_model=PersonalResponse)
@@ -40,7 +38,6 @@ async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = 
         name=created_personal.name,
         position=created_personal.position,
         area=created_personal.area,
-        process_id=created_personal.process_id,
         email=created_personal.email
     )
 
@@ -55,7 +52,6 @@ async def read_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
         name=personal.name,
         position=personal.position,
         area=personal.area,
-        process_id=personal.process_id,
         email=personal.email
     )
 
@@ -69,7 +65,6 @@ async def read_all_personal(db: AsyncSession = Depends(get_db)):
             name=personal.name,
             position=personal.position,
             area=personal.area,
-            process_id=personal.process_id,
             email=personal.email
         ) for personal in personals
     ]
@@ -85,7 +80,6 @@ async def update_personal(personal_id: str, personal: PersonalCreate, db: AsyncS
         name=updated_personal.name,
         position=updated_personal.position,
         area=updated_personal.area,
-        process_id=updated_personal.process_id,
         email=updated_personal.email
     )
 

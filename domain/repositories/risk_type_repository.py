@@ -15,10 +15,8 @@ class RiskTypeRepository:
             category_id=risk_type.category_id,
             description=risk_type.description
         ).returning(RiskType.id_risktype, RiskType.category_id, RiskType.description)
-        print ("creando bd", str(stmt))
         try:
             result = await self.session.execute(stmt)
-            print ("dentro del try", str(result))
             await self.session.commit()
             row = result.fetchone()
             if row:

@@ -4,6 +4,6 @@ from pydantic import BaseModel
 class Personal(BaseModel):
     id_personal: str
     name:str
-    post:str
+    position:str
     area:Optional[str]
     email:str

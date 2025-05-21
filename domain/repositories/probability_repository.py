@@ -15,13 +15,12 @@ class ProbabilityRepository:
             level=probability.level,
             description=probability.description,
             definition=probability.definition,
-            criteria_smlv=probability.criteria_percentage
+            criteria_por=probability.criteria_por
         ).returning(
-            Probability.id,
             Probability.level,
             Probability.description,
             Probability.definition,
-            Probability.criteria_smlv
+            Probability.criteria_por
         )
         try:
             result = await self.session.execute(stmt)
@@ -29,27 +28,25 @@ class ProbabilityRepository:
             row = result.fetchone()
             if row:
                 return ProbabilityEntity(
-                    id=row.id,
                     level=row.level,
                     description=row.description,
                     definition=row.definition,
-                    criteria_percentage=float(row.criteria_smlv)
+                   criteria_por=float(row.criteria_por)
                 )
         except IntegrityError as e:
             await self.session.rollback()
             raise ValueError("Probability already exists") from e
 
     async def get_probability(self, probability_id: int) -> Optional[ProbabilityEntity]:
-        stmt = select(Probability).where(Probability.id == probability_id)
+        stmt = select(Probability).where(Probability.level == probability_id)
         result = await self.session.execute(stmt)
         probability = result.scalar_one_or_none()
         if probability:
             return ProbabilityEntity(
-                id=probability.id,
                 level=probability.level,
                 description=probability.description,
                 definition=probability.definition,
-                criteria_percentage=float(probability.criteria_smlv)
+                criteria_por=float(probability.criteria_por)
             )
         return None
 
@@ -59,43 +56,40 @@ class ProbabilityRepository:
         probabilities = result.scalars().all()
         return [
             ProbabilityEntity(
-                id=p.id,
                 level=p.level,
                 description=p.description,
                 definition=p.definition,
-                criteria_percentage=float(p.criteria_smlv)
+                criteria_por=float(p.criteria_por)
             ) for p in probabilities
         ]
 
     async def update_probability(self, probability_id: int, probability: ProbabilityEntity) -> Optional[ProbabilityEntity]:
-        stmt = update(Probability).where(Probability.id == probability_id).values(
+        stmt = update(Probability).where(Probability.level == probability_id).values(
             level=probability.level,
             description=probability.description,
             definition=probability.definition,
-            criteria_smlv=probability.criteria_percentage
+            criteria_por=probability.criteria_por
         ).returning(
-            Probability.id,
             Probability.level,
             Probability.description,
             Probability.definition,
-            Probability.criteria_smlv
+            Probability.criteria_por
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return ProbabilityEntity(
-                id=row.id,
                 level=row.level,
                 description=row.description,
                 definition=row.definition,
-                criteria_percentage=float(row.criteria_smlv)
+                criteria_por=float(row.criteria_por)
             )
         return None
 
     async def delete_probability(self, probability_id: int) -> None:
-        stmt = delete(Probability).where(Probability.id == probability_id)
+        stmt = delete(Probability).where(Probability.level == probability_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:
-            raise ValueError(f"Probability with id {probability_id} not found")
+            raise ValueError(f"Probability with level {probability_id} not found")

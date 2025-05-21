@@ -5,4 +5,4 @@ class Impact(BaseModel):
     level:int
     description:str
     definition:str
-    criteria_smlv:int
+    criteria_smlv:float

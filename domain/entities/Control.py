@@ -6,4 +6,4 @@ class Controller(BaseModel):
     description:str
     frequency:Optional[str]
     control_type_id:int
-    responsible_id:int    
+    responsible_id:str   

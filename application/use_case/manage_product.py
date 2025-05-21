@@ -2,19 +2,17 @@ from typing import List, Optional
 from domain.entities.Product import Product
 from domain.repositories.product_repository import ProductRepository
 
-async def create_product_service(description: str, repository: ProductRepository) -> Product:
-    product_service = Product(description=description)
-    return await repository.create_product_service(product_service)
+async def create_product(product_data: Product, repository: ProductRepository) -> Product:
+    return await repository.create_product(product_data)
 
-async def get_product_service(product_service_id: int, repository: ProductRepository) -> Optional[Product]:
-    return await repository.get_product_service(product_service_id)
+async def get_product(product_service_id: int, repository: ProductRepository) -> Product:
+    return await repository.get_product(product_service_id)
 
-async def get_all_products_services(repository: ProductRepository) -> List[Product]:
-    return await repository.get_all_products_services()
+async def get_all_products(repository: ProductRepository) -> List[Product]:
+    return await repository.get_all_products()
 
-async def update_product_service(product_service_id: int, description: str, repository: ProductRepository) -> Optional[Product]:
-    product_service = Product(id=product_service_id, description=description)
-    return await repository.update_product_service(product_service)
+async def update_product(product_service_id: int, product_data: Product, repository: ProductRepository) -> Product:
+    return await repository.update_product(product_service_id, product_data)
 
-async def delete_product_service(product_service_id: int, repository: ProductRepository) -> None:
-    await repository.delete_product_service(product_service_id)
+async def delete_product(product_service_id: int, repository: ProductRepository) -> None:
+    await repository.delete_product(product_service_id)
