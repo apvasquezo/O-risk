@@ -5,3 +5,4 @@ class Process(BaseModel):
     id_process:Optional[int]=None
     macroprocess_id:int
     description:str
+    personal_id:int
