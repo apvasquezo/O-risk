@@ -115,7 +115,6 @@ class Personal(Base):
     name = Column(String(100), nullable=False)
     position = Column(String(100), nullable=False)
     area = Column(String(100), nullable=True)
-    process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
     email = Column(String(255), nullable=True)
 
 class Probability(Base):
@@ -133,6 +132,7 @@ class Process(Base):
     id_process = Column(Integer, primary_key=True, index=True, autoincrement=True)
     macroprocess_id = Column(Integer, ForeignKey('macroprocesses.id_macro'), nullable=False)
     description = Column(String(255), nullable=False)
+    personal_id= Column(Integer, ForeignKey('personal.id_personal'), nullable=False)
 
 class Product(Base):
     __tablename__ = "products_services"

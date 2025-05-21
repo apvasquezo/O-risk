@@ -6,5 +6,4 @@ class Personal(BaseModel):
     name:str
     post:str
     area:Optional[str]
-    process_id:int
     email:str
