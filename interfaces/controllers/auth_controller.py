@@ -15,7 +15,7 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
-    role: str  # 
+    role: str  
 
 @router.post("/login", response_model=TokenResponse)
 async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
@@ -31,7 +31,7 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     # Mapea role_id a nombre legible
     role_map = {1: "super", 2: "admin"}
     role = role_map.get(db_user.role_id)
-
+    print("role ", role)
     if not role:
         raise HTTPException(status_code=403, detail="Rol no autorizado")
 
@@ -40,7 +40,7 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
         "sub": db_user.username,
         "role": role
     })
-
+    print ("token ", token)
     return {
         "access_token": token,
         "token_type": "bearer",
