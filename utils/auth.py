@@ -39,6 +39,7 @@ def decode_token(token: str) -> dict | None:
     """Decodifica un token JWT y verifica su validez, incluyendo roles."""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print("decodificar ", payload)
         return payload  # payload debe incluir "role" y otros datos
     except jwt.ExpiredSignatureError:
         print("Error: El token ha expirado.")
