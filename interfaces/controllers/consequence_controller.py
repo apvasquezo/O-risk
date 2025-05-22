@@ -11,8 +11,13 @@ from application.use_case.manage_consequence import (
     update_consequence,
     delete_consequence,
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/consequences",
+    tags=["Consecuencias"],
+    dependencies=[Depends(role_required("admin"))] 
+)
 
 class ConsequenceCreate(BaseModel):
     description: str
@@ -25,59 +30,36 @@ class ConsequenceResponse(BaseModel):
     risk_factor_id: int
     event_id: int
 
-@router.post("/consequence/", response_model=ConsequenceResponse, status_code=201)
+@router.post("/", response_model=ConsequenceResponse, status_code=201)
 async def create_consequence_endpoint(consequence: ConsequenceCreate, db: AsyncSession = Depends(get_db)):
     repository = ConsequenceRepository(db)
-    created_consequence = await create_consequence(consequence, repository)
-    return ConsequenceResponse(
-        id_consequence=created_consequence.id_consequence,
-        description=created_consequence.description,
-        risk_factor_id=created_consequence.risk_factor_id,
-        event_id=created_consequence.event_id,
-    )
+    created = await create_consequence(consequence, repository)
+    return ConsequenceResponse(**created.model_dump())
 
-@router.get("/consequence/{consequence_id}", response_model=ConsequenceResponse)
+@router.get("/{consequence_id}", response_model=ConsequenceResponse)
 async def read_consequence_endpoint(consequence_id: int, db: AsyncSession = Depends(get_db)):
     repository = ConsequenceRepository(db)
     consequence = await get_consequence(consequence_id, repository)
     if not consequence:
-        raise HTTPException(status_code=404, detail="Consequence not found")
-    return ConsequenceResponse(
-        id_consequence=consequence.id_consequence,
-        description=consequence.description,
-        risk_factor_id=consequence.risk_factor_id,
-        event_id=consequence.event_id,
-    )
+        raise HTTPException(status_code=404, detail="Consecuencia no encontrada")
+    return ConsequenceResponse(**consequence.model_dump())
 
-@router.get("/consequence/", response_model=List[ConsequenceResponse])
+@router.get("/", response_model=List[ConsequenceResponse])
 async def read_all_consequence_endpoint(db: AsyncSession = Depends(get_db)):
     repository = ConsequenceRepository(db)
     consequences = await get_all_consequence(repository)
-    return [
-        ConsequenceResponse(
-            id_consequence=c.id,
-            description=c.description,
-            risk_factor_id=c.risk_factor_id,
-            event_id=c.event_id,
-        )
-        for c in consequences
-    ]
+    return [ConsequenceResponse(**c.model_dump()) for c in consequences]
 
-@router.put("/consequence/{consequence_id}", response_model=ConsequenceResponse)
+@router.put("/{consequence_id}", response_model=ConsequenceResponse)
 async def update_consequence_endpoint(consequence_id: int, consequence: ConsequenceCreate, db: AsyncSession = Depends(get_db)):
     repository = ConsequenceRepository(db)
-    updated_consequence = await update_consequence(consequence_id, consequence, repository)
-    if not updated_consequence:
-        raise HTTPException(status_code=404, detail="Cause not found")
-    return ConsequenceResponse(
-        id_consequence=updated_consequence.id,
-        description=updated_consequence.description,
-        risk_factor_id=updated_consequence.risk_factor_id,
-        event_id=updated_consequence.event_id,
-    )
+    updated = await update_consequence(consequence_id, consequence, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Consecuencia no encontrada")
+    return ConsequenceResponse(**updated.model_dump())
 
-@router.delete("/consequence/{cconsequence_id}", status_code=204)
-async def delete_concequence_endpoint(consequence_id: int, db: AsyncSession = Depends(get_db)):
+@router.delete("/{consequence_id}", status_code=204)
+async def delete_consequence_endpoint(consequence_id: int, db: AsyncSession = Depends(get_db)):
     repository = ConsequenceRepository(db)
     await delete_consequence(consequence_id, repository)
-    return {"detail": "Consequence deleted"}
+    return {"detail": "Consecuencia eliminada"}

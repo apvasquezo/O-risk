@@ -11,70 +11,55 @@ from application.use_case.manage_process import (
     update_process,
     delete_process
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/processes",
+    tags=["Procesos"],
+    dependencies=[Depends(role_required("admin"))]
+)
 
 class ProcessCreate(BaseModel):
     macroprocess_id: int
     description: str
-    personal_id:str
+    personal_id: str
 
 class ProcessResponse(BaseModel):
     id_process: int
     macroprocess_id: int
     description: str
-    personal_id:str
+    personal_id: str
 
-@router.post("/processes/", response_model=ProcessResponse)
+@router.post("/", response_model=ProcessResponse, status_code=201)
 async def create_process_endpoint(process: ProcessCreate, db: AsyncSession = Depends(get_db)):
     repository = ProcessRepository(db)
-    created_process = await create_process(process,repository )
-    return ProcessResponse(
-        id_process=created_process.id_process, 
-        macroprocess_id=created_process.macroprocess_id, 
-        description=created_process.description,
-        personal_id=created_process.personal_id
-    )
+    created = await create_process(process, repository)
+    return ProcessResponse(**created.model_dump())
 
-@router.get("/processes/{process_id}", response_model=ProcessResponse)
+@router.get("/{process_id}", response_model=ProcessResponse)
 async def get_process_id(process_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProcessRepository(db)
     process = await get_process(process_id, repository)
-    if process is None:
-        raise HTTPException(status_code=404, detail="Process not found")
-    return ProcessResponse(
-        id_process=process.id_process, 
-        macroprocess_id=process.macroprocess_id, 
-        description=process.description,
-        personal_id=process.personal_id
-    )
+    if not process:
+        raise HTTPException(status_code=404, detail="Proceso no encontrado")
+    return ProcessResponse(**process.model_dump())
 
-@router.get("/processes/", response_model=List[ProcessResponse])
+@router.get("/", response_model=List[ProcessResponse])
 async def read_processes(db: AsyncSession = Depends(get_db)):
     repository = ProcessRepository(db)
     processes = await get_all_processes(repository)
-    return [ProcessResponse(
-        id_process=p.id_process, 
-        macroprocess_id=p.macroprocess_id, 
-        description=p.description,
-        personal_id=p.personal_id
-    ) for p in processes]
+    return [ProcessResponse(**p.model_dump()) for p in processes]
 
-@router.put("/processes/{process_id}", response_model=ProcessResponse)
-async def update_process(process_id: int, process: ProcessCreate, db: AsyncSession = Depends(get_db)):
+@router.put("/{process_id}", response_model=ProcessResponse)
+async def update_process_endpoint(process_id: int, process: ProcessCreate, db: AsyncSession = Depends(get_db)):
     repository = ProcessRepository(db)
-    updated_process = await update_process(process_id, process, repository)
-    if updated_process is None:
-        raise HTTPException(status_code=404, detail="Process not found")
-    return ProcessResponse(
-        id_process=updated_process.id_process, 
-        macroprocess_id=updated_process.macroprocess_id, 
-        description=updated_process.description,
-        personal_id=updated_process.personal_id
-    )
+    updated = await update_process(process_id, process, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Proceso no encontrado")
+    return ProcessResponse(**updated.model_dump())
 
-@router.delete("/processes/{process_id}", response_model=dict)
-async def delete_process(process_id: int, db: AsyncSession = Depends(get_db)):
+@router.delete("/{process_id}", response_model=dict)
+async def delete_process_endpoint(process_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProcessRepository(db)
     await delete_process(process_id, repository)
-    return {"detail": "Process deleted"}
+    return {"detail": "Proceso eliminado"}
