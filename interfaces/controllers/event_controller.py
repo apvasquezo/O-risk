@@ -11,8 +11,13 @@ from application.use_case.manage_event import (
     update_event,
     delete_event,
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/events",
+    tags=["Eventos"],
+    dependencies=[Depends(role_required("admin"))] 
+)
 
 class EventCreate(BaseModel):
     risk_type_id: int
@@ -22,43 +27,43 @@ class EventCreate(BaseModel):
     impact_id: int
 
 class EventResponse(BaseModel):
-    id: int
+    id_event: int
     risk_type_id: int
     factor: str
     description: str
     probability_id: int
     impact_id: int
 
-@router.post("/events/", response_model=EventResponse)
+@router.post("/", response_model=EventResponse, status_code=201)
 async def create_event_endpoint(event: EventCreate, db: AsyncSession = Depends(get_db)):
     repository = EventRepository(db)
-    created_event = await create_event(event, repository)
-    return EventResponse(**created_event.model_dump())  
+    created = await create_event(event, repository)
+    return EventResponse(**created.model_dump())
 
-@router.get("/events/{event_id}", response_model=EventResponse)
+@router.get("/{event_id}", response_model=EventResponse)
 async def read_event_endpoint(event_id: int, db: AsyncSession = Depends(get_db)):
     repository = EventRepository(db)
     event = await get_event(event_id, repository)
     if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return EventResponse(**event.model_dump())  
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    return EventResponse(**event.model_dump())
 
-@router.get("/events/", response_model=List[EventResponse])
+@router.get("/", response_model=List[EventResponse])
 async def read_all_events_endpoint(db: AsyncSession = Depends(get_db)):
     repository = EventRepository(db)
     events = await get_all_events(repository)
-    return [EventResponse(**e.model_dump()) for e in events]  
+    return [EventResponse(**e.model_dump()) for e in events]
 
-@router.put("/events/{event_id}", response_model=EventResponse)
+@router.put("/{event_id}", response_model=EventResponse)
 async def update_event_endpoint(event_id: int, event: EventCreate, db: AsyncSession = Depends(get_db)):
     repository = EventRepository(db)
-    updated_event = await update_event(event_id, event, repository)
-    if not updated_event:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return EventResponse(**updated_event.model_dump())  
+    updated = await update_event(event_id, event, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    return EventResponse(**updated.model_dump())
 
-@router.delete("/events/{event_id}", response_model=dict)
+@router.delete("/{event_id}", response_model=dict)
 async def delete_event_endpoint(event_id: int, db: AsyncSession = Depends(get_db)):
     repository = EventRepository(db)
     await delete_event(event_id, repository)
-    return {"detail": "Event deleted"}
+    return {"detail": "Evento eliminado"}
