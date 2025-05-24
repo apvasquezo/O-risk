@@ -12,6 +12,7 @@ class UserRepository:
         self.session = session
 
     async def create_user(self, user: UserEntity) -> UserEntity:
+        print("estoy en repositorio ", user)
         stmt = insert(ORMUser).values(
             username=user.username, 
             password=user.password, 

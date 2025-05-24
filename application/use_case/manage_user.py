@@ -3,6 +3,7 @@ from domain.repositories.user_repository import UserRepository
 
 async def create_user(username: str, password: str, role_id: int, repository: UserRepository):
     user = User(username=username, password=password, role_id=role_id)
+    print("estoy en crete user ", user)
     return await repository.create_user(user)
 
 def get_user(user_id: int, repository: UserRepository):
