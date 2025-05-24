@@ -7,11 +7,10 @@ from psycopg2.errors import DuplicateDatabase
 from urllib.parse import urlparse
 from config import settings
 
-DATABASE_URL = settings.DATABASE_URL  # URL para conexiones asíncronas
+DATABASE_URL = settings.DATABASE_URL 
 
-# Extraer componentes de la URL
 parsed_url = urlparse(DATABASE_URL)
-db_name = parsed_url.path[1:]  # Quitar la primera barra '/'
+db_name = parsed_url.path[1:] 
 db_user = parsed_url.username
 db_password = parsed_url.password
 db_host = parsed_url.hostname
@@ -24,7 +23,7 @@ def verify_and_create_database():
     try:
         # Conectar al servidor PostgreSQL
         conn = connect(
-            dbname="postgres",  # Conexión a la base de datos principal del sistema
+            dbname="postgres", 
             user=db_user,
             password=db_password,
             host=db_host,
@@ -55,16 +54,12 @@ def verify_and_create_database():
             cursor.close()
             conn.close()
 
-# Verificar y crear la base de datos si es necesario
 verify_and_create_database()
 
-# Crea el motor asíncrono
 engine = create_async_engine(DATABASE_URL, echo=True)
 
-# Crea una fábrica de sesiones asíncronas
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
-# Base para los modelos
 Base = declarative_base()
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
