@@ -11,8 +11,13 @@ from application.use_case.manage_product import (
     update_product,
     delete_product
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/products",
+    tags=["Productos y Servicios"],
+    dependencies=[Depends(role_required("super"))] 
+)
 
 class ProductServiceCreate(BaseModel):
     description: str
@@ -21,49 +26,37 @@ class ProductServiceResponse(BaseModel):
     id_product: int
     description: str
 
-@router.post("/products/", response_model=ProductServiceResponse)
+
+@router.post("/", response_model=ProductServiceResponse, status_code=201)
 async def create_product_endpoint(product: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    created_product = await create_product(product,  repository)
-    return ProductServiceResponse(
-        id_product=created_product.id_product, 
-        description=created_product.description
-    )
+    created = await create_product(product, repository)
+    return ProductServiceResponse(**created.model_dump())
 
-@router.get("/products/{product_id}", response_model=ProductServiceResponse)
+@router.get("/{product_id}", response_model=ProductServiceResponse)
 async def get_product_endpoint(product_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    product_service = await get_product(product_id, repository)
-    if product_service is None:
-        raise HTTPException(status_code=404, detail="Product_Service not found")
-    return ProductServiceResponse(
-        id_product=product_service.id_product, 
-        description=product_service.description
-    )
+    product = await get_product(product_id, repository)
+    if not product:
+        raise HTTPException(status_code=404, detail="Producto o servicio no encontrado")
+    return ProductServiceResponse(**product.model_dump())
 
-@router.get("/products/", response_model=List[ProductServiceResponse])
+@router.get("/", response_model=List[ProductServiceResponse])
 async def read_all_products(db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    products_services = await get_all_products(repository)
-    return [ProductServiceResponse(
-        id_product=ps.id_product, 
-        description=ps.description
-        ) for ps in products_services
-    ]
+    products = await get_all_products(repository)
+    return [ProductServiceResponse(**p.model_dump()) for p in products]
 
-@router.put("/products_services/{product_service_id}", response_model=ProductServiceResponse)
-async def update_product_endpoint(product_id: int, product_service: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
+@router.put("/{product_id}", response_model=ProductServiceResponse)
+async def update_product_endpoint(product_id: int, product: ProductServiceCreate, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
-    updated_product = await update_product(product_id, product_service, repository)
-    if updated_product is None:
-        raise HTTPException(status_code=404, detail="Product_Service not found")
-    return ProductServiceResponse(
-        id_product=updated_product.id_product, 
-        description=updated_product.description
-    )
+    updated = await update_product(product_id, product, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Producto o servicio no encontrado")
+    return ProductServiceResponse(**updated.model_dump())
 
-@router.delete("/products_services/{product_service_id}", response_model=dict)
+@router.delete("/{product_id}", response_model=dict)
 async def delete_product_endpoint(product_id: int, db: AsyncSession = Depends(get_db)):
     repository = ProductRepository(db)
     await delete_product(product_id, repository)
-    return {"detail": "Product_Service deleted"}
+    return {"detail": "Producto o servicio eliminado"}

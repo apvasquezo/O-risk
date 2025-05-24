@@ -11,8 +11,13 @@ from application.use_case.manage_risktype import (
     update_risk_type,
     delete_risk_type,
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/risk-types",
+    tags=["Tipos de Riesgo"],
+    dependencies=[Depends(role_required("super"))]
+)
 
 class RiskTypeCreate(BaseModel):
     category_id: int
@@ -23,51 +28,36 @@ class RiskTypeResponse(BaseModel):
     category_id: int
     description: str
 
-@router.post("/risk-types/", response_model=RiskTypeResponse)
+@router.post("/", response_model=RiskTypeResponse, status_code=201)
 async def create_risk_type_endpoint(risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
-    created_risk_type = await create_risk_type(risk_type, repository)
-    return RiskTypeResponse(
-        id_risktype=created_risk_type.id_risktype,
-        category_id=created_risk_type.category_id,
-        description=created_risk_type.description
-    )
+    created = await create_risk_type(risk_type, repository)
+    return RiskTypeResponse(**created.model_dump())
 
-@router.get("/risk-types/{risk_type_id}", response_model=RiskTypeResponse)
+@router.get("/{risk_type_id}", response_model=RiskTypeResponse)
 async def read_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
     risk_type = await get_risk_type(risk_type_id, repository)
     if not risk_type:
-        raise HTTPException(status_code=404, detail="Risk Type not found")
-    return RiskTypeResponse(
-        id_risktype=risk_type.id_risktype,
-        category_id=risk_type.category_id,
-        description=risk_type.description
-    )
+        raise HTTPException(status_code=404, detail="Tipo de riesgo no encontrado")
+    return RiskTypeResponse(**risk_type.model_dump())
 
-@router.get("/risk-types/", response_model=List[RiskTypeResponse])
+@router.get("/", response_model=List[RiskTypeResponse])
 async def read_all_risk_types_endpoint(db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
     risk_types = await get_all_risk_types(repository)
-    return [
-        RiskTypeResponse(id_risktype=risk.id_risktype, category_id=risk.category_id, description=risk.description)
-        for risk in risk_types
-    ]
+    return [RiskTypeResponse(**r.model_dump()) for r in risk_types]
 
-@router.put("/risk-types/{risk_type_id}", response_model=RiskTypeResponse)
+@router.put("/{risk_type_id}", response_model=RiskTypeResponse)
 async def update_risk_type_endpoint(risk_type_id: int, risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
-    updated_risk_type = await update_risk_type(risk_type_id, risk_type, repository)
-    if not updated_risk_type:
-        raise HTTPException(status_code=404, detail="Risk Type not found")
-    return RiskTypeResponse(
-        id_risktype=updated_risk_type.id_risktype,
-        category_id=updated_risk_type.category_id,
-        description=updated_risk_type.description
-    )
+    updated = await update_risk_type(risk_type_id, risk_type, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Tipo de riesgo no encontrado")
+    return RiskTypeResponse(**updated.model_dump())
 
-@router.delete("/risk-types/{risk_type_id}", response_model=dict)
+@router.delete("/{risk_type_id}", response_model=dict)
 async def delete_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_db)):
     repository = RiskTypeRepository(db)
     await delete_risk_type(risk_type_id, repository)
-    return {"detail": "Risk Type deleted"}
+    return {"detail": "Tipo de riesgo eliminado"}

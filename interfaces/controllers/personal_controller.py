@@ -11,83 +11,62 @@ from application.use_case.manage_personal import (
     update_personal,
     delete_personal
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/personal",
+    tags=["Personal"],
+    dependencies=[Depends(role_required("super"))]
+)
 
-# Schemas para las solicitudes y respuestas
 class PersonalCreate(BaseModel):
     id_personal: str
     name: str
     position: str
-    area: Optional[str]
-    email: Optional[str]
+    area: Optional[str] = None
+    email: Optional[str] = None
 
 class PersonalResponse(BaseModel):
     id_personal: str
     name: str
     position: str
-    area: Optional[str]
-    email: Optional[str]
+    area: Optional[str] = None
+    email: Optional[str] = None
 
-@router.post("/personal/", response_model=PersonalResponse)
+
+@router.post("/", response_model=PersonalResponse)
 async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    created_personal = await create_personal(personal, repository)
-    return PersonalResponse(
-        id_personal=created_personal.id_personal,
-        name=created_personal.name,
-        position=created_personal.position,
-        area=created_personal.area,
-        email=created_personal.email
-    )
+    created = await create_personal(personal, repository)
+    return PersonalResponse(**created.model_dump())
 
-@router.get("/personal/{personal_id}", response_model=PersonalResponse)
+@router.get("/{personal_id}", response_model=PersonalResponse)
 async def read_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    personal = await get_personal(personal_id, repository)
-    if personal is None:
-        raise HTTPException(status_code=404, detail="Personal not found")
-    return PersonalResponse(
-        id_personal=personal.id_personal,
-        name=personal.name,
-        position=personal.position,
-        area=personal.area,
-        email=personal.email
-    )
+    person = await get_personal(personal_id, repository)
+    if person is None:
+        raise HTTPException(status_code=404, detail="Personal no encontrado")
+    return PersonalResponse(**person.model_dump())
 
-@router.get("/personal/", response_model=List[PersonalResponse])
+@router.get("/", response_model=List[PersonalResponse])
 async def read_all_personal(db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    personals = await get_all_personal(repository)
-    return [
-        PersonalResponse(
-            id_personal=personal.id_personal,
-            name=personal.name,
-            position=personal.position,
-            area=personal.area,
-            email=personal.email
-        ) for personal in personals
-    ]
+    persons = await get_all_personal(repository)
+    return [PersonalResponse(**p.model_dump()) for p in persons]
 
-@router.put("/personal/{personal_id}", response_model=PersonalResponse)
-async def update_personal(personal_id: str, personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+@router.put("/{personal_id}", response_model=PersonalResponse)
+async def update_personal_endpoint(personal_id: str, personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
-    updated_personal = await update_personal(personal_id, personal, repository)
-    if updated_personal is None:
-        raise HTTPException(status_code=404, detail="Personal not found")
-    return PersonalResponse(
-        id_personal=updated_personal.id_personal,
-        name=updated_personal.name,
-        position=updated_personal.position,
-        area=updated_personal.area,
-        email=updated_personal.email
-    )
+    updated = await update_personal(personal_id, personal, repository)
+    if updated is None:
+        raise HTTPException(status_code=404, detail="Personal no encontrado")
+    return PersonalResponse(**updated.__dict__)
 
-@router.delete("/personal/{personal_id}", response_model=dict)
-async def delete_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
+@router.delete("/{personal_id}", response_model=dict)
+async def delete_personal_endpoint(personal_id: str, db: AsyncSession = Depends(get_db)):
     repository = PersonalRepository(db)
     try:
         await delete_personal(personal_id, repository)
-        return {"detail": "Personal record deleted"}
+        return {"detail": "Registro de personal eliminado"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

@@ -11,8 +11,13 @@ from application.use_case.manage_control import (
     update_control,
     delete_control,
 )
+from utils.auth import role_required
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/controls",
+    tags=["Controles"],
+    dependencies=[Depends(role_required("admin"))]
+)
 
 class ControlCreate(BaseModel):
     control_type_id: int
@@ -27,62 +32,36 @@ class ControlResponse(BaseModel):
     frequency: Optional[str]
     responsible_id: str
 
-@router.post("/controls/", response_model=ControlResponse)
+@router.post("/", response_model=ControlResponse, status_code=201)
 async def create_control_endpoint(control: ControlCreate, db: AsyncSession = Depends(get_db)):
     repository = ControlRepository(db)
-    created_control = await create_control(control, repository)
-    return ControlResponse(
-        id_control=created_control.id_control,
-        control_type_id=created_control.control_type_id,
-        description=created_control.description,
-        frequency=created_control.frequency,
-        responsible_id=created_control.responsible_id
-    )
+    created = await create_control(control, repository)
+    return ControlResponse(**created.model_dump())
 
-@router.get("/controls/{control_id}", response_model=ControlResponse)
+@router.get("/{control_id}", response_model=ControlResponse)
 async def read_control_endpoint(control_id: int, db: AsyncSession = Depends(get_db)):
     repository = ControlRepository(db)
     control = await get_control(control_id, repository)
     if not control:
-        raise HTTPException(status_code=404, detail="Control not found")
-    return ControlResponse(
-        id_control=control.id_control,
-        control_type_id=control.control_type_id,
-        description=control.description,
-        frequency=control.frequency,
-        responsible_id=control.responsible_id
-    )
+        raise HTTPException(status_code=404, detail="Control no encontrado")
+    return ControlResponse(**control.model_dump())
 
-@router.get("/controls/", response_model=List[ControlResponse])
+@router.get("/", response_model=List[ControlResponse])
 async def read_all_controls_endpoint(db: AsyncSession = Depends(get_db)):
     repository = ControlRepository(db)
     controls = await get_all_controls(repository)
-    return [
-        ControlResponse(
-            id_control=c.id_control,
-            control_type_id=c.control_type_id,
-            description=c.description,
-            frequency=c.frequency,
-            responsible_id=c.responsible_id
-        ) for c in controls
-    ]
+    return [ControlResponse(**c.model_dump()) for c in controls]
 
-@router.put("/controls/{control_id}", response_model=ControlResponse)
+@router.put("/{control_id}", response_model=ControlResponse)
 async def update_control_endpoint(control_id: int, control: ControlCreate, db: AsyncSession = Depends(get_db)):
     repository = ControlRepository(db)
-    updated_control = await update_control(control_id, control, repository)
-    if not updated_control:
-        raise HTTPException(status_code=404, detail="Control not found")
-    return ControlResponse(
-        id_control=updated_control.id_control,
-        control_type_id=updated_control.control_type_id,
-        description=updated_control.description,
-        frequency=updated_control.frequency,
-        responsible_id=updated_control.responsible_id
-    )
+    updated = await update_control(control_id, control, repository)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Control no encontrado")
+    return ControlResponse(**updated.model_dump())
 
-@router.delete("/controls/{control_id}", response_model=dict)
+@router.delete("/{control_id}", response_model=dict)
 async def delete_control_endpoint(control_id: int, db: AsyncSession = Depends(get_db)):
     repository = ControlRepository(db)
     await delete_control(control_id, repository)
-    return {"detail": "Control deleted"}
+    return {"detail": "Control eliminado"}

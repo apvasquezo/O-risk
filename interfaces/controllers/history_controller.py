@@ -21,7 +21,6 @@ class HistoryCreate(BaseModel):
     start_date: datetime
     end_date: Optional[datetime]
     value_risk: float
-     # Configuración para permitir tipos arbitrarios
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class HistoryResponse(BaseModel):
