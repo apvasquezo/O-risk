@@ -28,7 +28,7 @@ class User(Base):
     username = Column(String(100), unique=True, nullable=False, index=True)
     password = Column(String(100), nullable=False)
     role_id = Column(Integer, ForeignKey("roles.id_role"), nullable=False)
-    role = relationship("Role", back_populates="users", lazy='joined') 
+    role = relationship("Role", back_populates="users", lazy='joined')
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 

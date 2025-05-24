@@ -20,6 +20,7 @@ class SqlAlchemyUserRepository:
         return self.db.query(ORMUser).all()
 
     def update_user(self, user: User):
+        print("ya estoy en el repositorio ", user)
         db_user = self.db.query(ORMUser).filter(ORMUser.id_user == user.id).first()
         db_user.username = user.username
         db_user.password = user.password

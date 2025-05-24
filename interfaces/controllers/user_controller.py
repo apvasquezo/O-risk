@@ -31,6 +31,7 @@ class UserResponse(BaseModel):
 
 @router.post("/", response_model=UserResponse)
 async def create_user_endpoint(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    print("que recibe", user)
     repository = UserRepository(db)
     created_user = await create_user(user.username, user.password, user.role_id, repository)
     return UserResponse(**created_user.__dict__)
@@ -49,10 +50,17 @@ async def read_users(db: AsyncSession = Depends(get_db)):
     users = await get_all_users_use_case(repository)
     return [UserResponse(**user.__dict__) for user in users]
 
+
 @router.put("/{user_id}", response_model=UserResponse)
 async def update_user_endpoint(user_id: int, user: UserCreate, db: AsyncSession = Depends(get_db)):
     repository = UserRepository(db)
-    updated_user = await update_user_use_case(user_id, user, repository)
+    updated_user = await update_user_use_case(
+        user_id,
+        user.username,
+        user.password,
+        user.role_id,
+        repository
+    )
     if updated_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return UserResponse(**updated_user.__dict__)
