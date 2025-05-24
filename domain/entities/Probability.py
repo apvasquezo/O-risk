@@ -5,4 +5,4 @@ class Probability(BaseModel):
     level:int
     description:str
     definition:str
-    criteria_porcentage:int
+    criteria_por:float

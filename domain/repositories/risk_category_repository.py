@@ -13,19 +13,19 @@ class RiskCategoryRepository:
     async def create_risk_category(self, risk_category: RiskCategoryEntity) -> RiskCategoryEntity:
         stmt = insert(RiskCategory).values(
             description=risk_category.description
-        ).returning(RiskCategory.id, RiskCategory.description)
+        ).returning(RiskCategory.id_riskcategory, RiskCategory.description)
         try:
             result = await self.session.execute(stmt)
             await self.session.commit()
             row = result.fetchone()
             if row:
-                return RiskCategoryEntity(id=row.id, description=row.description)
+                return RiskCategoryEntity(id_riskcategory=row.id_riskcategory, description=row.description)
         except IntegrityError as e:
             await self.session.rollback()
             raise ValueError("Risk category with this description already exists") from e
 
     async def get_risk_category(self, category_id: int) -> Optional[RiskCategoryEntity]:
-        stmt = select(RiskCategory).where(RiskCategory.id == category_id)
+        stmt = select(RiskCategory).where(RiskCategory.id_riskcategory == category_id)
         result = await self.session.execute(stmt)
         category = result.scalar_one_or_none()
         return category
@@ -37,20 +37,20 @@ class RiskCategoryRepository:
         return categories
 
     async def update_risk_category(self, category_id: int, risk_category: RiskCategoryEntity) -> Optional[RiskCategoryEntity]:
-        stmt = update(RiskCategory).where(RiskCategory.id == category_id).values(
+        stmt = update(RiskCategory).where(RiskCategory.id_riskcategory == category_id).values(
             description=risk_category.description
             ).returning(
-                RiskCategory.id, RiskCategory.description
+                RiskCategory.id_riskcategory, RiskCategory.description
                 )
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
-            return RiskCategoryEntity(id=row.id, description=row.description)
+            return RiskCategoryEntity(id_riskcategory=row.id_riskcategory, description=row.description)
         return None
 
     async def delete_risk_category(self, category_id: int) -> None:
-        stmt = delete(RiskCategory).where(RiskCategory.id == category_id)
+        stmt = delete(RiskCategory).where(RiskCategory.id_riskcategory == category_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

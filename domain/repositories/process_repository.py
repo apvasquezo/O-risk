@@ -14,10 +14,12 @@ class ProcessRepository:
         stmt = insert(ORMProcess).values(
             macroprocess_id=process.macroprocess_id,
             description=process.description,
+            personal_id=process.personal_id,
         ).returning(
-            ORMProcess.id, 
+            ORMProcess.id_process, 
             ORMProcess.macroprocess_id, 
-            ORMProcess.description
+            ORMProcess.description,
+            ORMProcess.personal_id
         )
         try:
             result = await self.session.execute(stmt)
@@ -25,23 +27,25 @@ class ProcessRepository:
             row = result.fetchone()
             if row:
                 return ProcessEntity(
-                    id=row.id, 
+                    id_process=row.id_process, 
                     macroprocess_id=row.macroprocess_id, 
-                    description=row.description
+                    description=row.description,
+                    personal_id=row.personal_id,
                 )
         except IntegrityError as e:
             await self.session.rollback()
             raise ValueError("Process creation failed") from e
 
     async def get_process(self, process_id: int) -> Optional[ProcessEntity]:
-        stmt = select(ORMProcess).where(ORMProcess.id == process_id)
+        stmt = select(ORMProcess).where(ORMProcess.id_process == process_id)
         result = await self.session.execute(stmt)
         orm_process = result.scalar_one_or_none()
         if orm_process:
             return ProcessEntity(
-                id=orm_process.id, 
+                id_process=orm_process.id_process, 
                 macroprocess_id=orm_process.macroprocess_id, 
-                description=orm_process.description
+                description=orm_process.description,
+                personal_id=orm_process.personal_id
             )
         return None
 
@@ -51,34 +55,38 @@ class ProcessRepository:
         orm_processes = result.scalars().all()
         return [
             ProcessEntity(
-                id=p.id, 
+                id_process=p.id_process, 
                 macroprocess_id=p.macroprocess_id, 
-                description=p.description
+                description=p.description,
+                personal_id=p.personal_id
             ) for p in orm_processes
         ]
 
     async def update_process(self, process_id: int, process: ProcessEntity) -> Optional[ProcessEntity]:
-        stmt = update(ORMProcess).where(ORMProcess.id == process_id).values(
+        stmt = update(ORMProcess).where(ORMProcess.id_process == process_id).values(
             macroprocess_id=process.macroprocess_id,
             description=process.description,
+            personal_id=process.personal_id,
         ).returning(
-            ORMProcess.id, 
+            ORMProcess.id_process, 
             ORMProcess.macroprocess_id, 
-            ORMProcess.description
+            ORMProcess.description,
+            ORMProcess.personal_id
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return ProcessEntity(
-                id=row.id, 
+                id_process=row.id_process, 
                 macroprocess_id=row.macroprocess_id, 
-                description=row.description
+                description=row.description,
+                personal=row.personal_id
             )
         return None
 
     async def delete_process(self, process_id: int) -> None:
-        stmt = delete(ORMProcess).where(ORMProcess.id == process_id)
+        stmt = delete(ORMProcess).where(ORMProcess.id_process == process_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

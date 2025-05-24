@@ -15,9 +15,8 @@ class ImpactRepository:
             level=impact.level,
             description=impact.description,
             definition=impact.definition,
-            criteria_smlv=impact.criteria_smlv
+            criteria_smlv=float(impact.criteria_smlv)
         ).returning(
-            Impact.id,
             Impact.level,
             Impact.description,
             Impact.definition,
@@ -29,7 +28,6 @@ class ImpactRepository:
             row = result.fetchone()
             if row:
                 return ImpactEntity(
-                    id=row.id,
                     level=row.level,
                     description=row.description,
                     definition=row.definition,
@@ -40,12 +38,11 @@ class ImpactRepository:
             raise ValueError("Impact already exists") from e
 
     async def get_impact(self, impact_id: int) -> Optional[ImpactEntity]:
-        stmt = select(Impact).where(Impact.id == impact_id)
+        stmt = select(Impact).where(Impact.level == impact_id)
         result = await self.session.execute(stmt)
         impact = result.scalar_one_or_none()
         if impact:
             return ImpactEntity(
-                id=impact.id,
                 level=impact.level,
                 description=impact.description,
                 definition=impact.definition,
@@ -59,7 +56,6 @@ class ImpactRepository:
         impacts = result.scalars().all()
         return [
             ImpactEntity(
-                id=i.id,
                 level=i.level,
                 description=i.description,
                 definition=i.definition,
@@ -68,13 +64,12 @@ class ImpactRepository:
         ]
 
     async def update_impact(self, impact_id: int, impact: ImpactEntity) -> Optional[ImpactEntity]:
-        stmt = update(Impact).where(Impact.id == impact_id).values(
+        stmt = update(Impact).where(Impact.level == impact_id).values(
             level=impact.level,
             description=impact.description,
             definition=impact.definition,
-            criteria_smlv=impact.criteria_smlv
+            criteria_smlv=float(impact.criteria_smlv)
         ).returning(
-            Impact.id,
             Impact.level,
             Impact.description,
             Impact.definition,
@@ -85,7 +80,6 @@ class ImpactRepository:
         row = result.fetchone()
         if row:
             return ImpactEntity(
-                id=row.id,
                 level=row.level,
                 description=row.description,
                 definition=row.definition,
@@ -94,8 +88,8 @@ class ImpactRepository:
         return None
 
     async def delete_impact(self, impact_id: int) -> None:
-        stmt = delete(Impact).where(Impact.id == impact_id)
+        stmt = delete(Impact).where(Impact.level == impact_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:
-            raise ValueError(f"Impact with id {impact_id} not found")
+            raise ValueError(f"Impact with level {impact_id} not found")

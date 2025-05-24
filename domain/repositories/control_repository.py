@@ -17,7 +17,7 @@ class ControlRepository:
             frequency=control.frequency,
             responsible_id=control.responsible_id
         ).returning(
-            Control.id, 
+            Control.id_control, 
             Control.control_type_id, 
             Control.description, 
             Control.frequency, 
@@ -29,7 +29,7 @@ class ControlRepository:
             row=result.fetchone()
             if row:
                 return ControlEntity(
-                    id=row.id,
+                    id_control=row.id_control,
                     control_type_id=row.control_type_id,
                     description=row.description,
                     frequency=row.frequency,
@@ -45,7 +45,7 @@ class ControlRepository:
         control= result.scalar_one_or_none()
         if control:
             return ControlEntity(
-                id=control.id,
+                id_control=control.id_control,
                 control_type_id=control.control_type_id,
                 description=control.description,
                 frequency=control.frequency,
@@ -59,7 +59,7 @@ class ControlRepository:
         controls = result.scalars().all()
         return [
             ControlEntity(
-                id= c.id,
+                id_control= c.id_control,
                 control_type_id=c.control_type_id,
                 description=c.description,
                 frequency=c.frequency,
@@ -68,13 +68,13 @@ class ControlRepository:
         ]
         
     async def update_control(self, control_id:int, control:ControlEntity) ->Optional[ControlEntity]:
-        stmt = update(Control).where(Control.id == control_id).values(
+        stmt = update(Control).where(Control.id_control == control_id).values(
             control_type_id=control.control_type_id,
             description=control.description,
             frequency=control.frequency,
             responsible_id=control.responsible_id
         ).returning(
-            Control.id,
+            Control.id_control,
             Control.control_type_id,
             Control.description,
             Control.frequency,
@@ -86,7 +86,7 @@ class ControlRepository:
         row= result.fetchone()
         if row:
             return ControlEntity(
-                id=row.id,
+                id_control=row.id_control,
                 control_type_id=row.control_type_id,
                 description=row.description,
                 frequency=row.frequency,
@@ -95,7 +95,7 @@ class ControlRepository:
         return None
     
     async def delete_control(self, control_id:int) -> None:
-        stmt = delete(Control).where(Control.id == control_id)
+        stmt = delete(Control).where(Control.id_control == control_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

@@ -19,7 +19,6 @@ class UserRepository:
         ).returning(ORMUser.id_user, ORMUser.username, ORMUser.role_id)
         try:
             result = await self.session.execute(stmt)
-            print(result)
             await self.session.commit()
             row = result.fetchone()
             if row:
@@ -47,13 +46,11 @@ class UserRepository:
         return None
 
     async def get_user_username(self, username: str) -> Optional[UserEntity]:
-        print(str(username))
         stmt = select(ORMUser).where(ORMUser.username == username)
-        print(str(stmt))
         result = await self.session.execute(stmt)
         print(str(result))
         orm_user = result.unique().scalar_one_or_none()
-        
+        print(str(orm_user))
         if orm_user:
             return UserEntity(
                 id_user=orm_user.id_user,
