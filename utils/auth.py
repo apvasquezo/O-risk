@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 # Configuración para JWT
 SECRET_KEY = "tu_secreto_super_seguro"  # Cambia esto por una clave secreta más segura
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60*24
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
