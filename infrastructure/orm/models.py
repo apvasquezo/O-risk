@@ -18,7 +18,7 @@ class Role(Base):
     
     id_role = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(100), nullable=False)
-    state=Column(Boolean, nullable=False)
+    state=Column(Boolean, nullable=False, default=True)
     users = relationship("User", back_populates="role", lazy='joined')
     
 class User(Base):
