@@ -116,7 +116,7 @@ class Personal(Base):
     position = Column(String(100), nullable=False)
     area = Column(String(100), nullable=True)
     email = Column(String(255), nullable=True)
-    notify=Column(bool, nullable=False, default=False)
+    notify=Column(Boolean, nullable=False, default=False)
 
 class Probability(Base):
     __tablename__ = 'probability'
