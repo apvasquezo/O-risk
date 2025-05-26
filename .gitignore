@@ -2,4 +2,5 @@ venv/
 .env
 *.pyc
 .terraform/
-id_rsa
+id_rsa*.pyc
+__pycache__/
