@@ -7,3 +7,4 @@ class Personal(BaseModel):
     position:str
     area:Optional[str]
     email:str
+    notify:bool
