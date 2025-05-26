@@ -25,6 +25,7 @@ class PersonalCreate(BaseModel):
     position: str
     area: Optional[str] = None
     email: Optional[str] = None
+    notify:bool
 
 class PersonalResponse(BaseModel):
     id_personal: str
@@ -32,6 +33,7 @@ class PersonalResponse(BaseModel):
     position: str
     area: Optional[str] = None
     email: Optional[str] = None
+    notify:bool
 
 
 @router.post("/", response_model=PersonalResponse)

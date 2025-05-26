@@ -16,13 +16,15 @@ class PersonalRepository:
             name=personal.name,
             position=personal.position,
             area=personal.area,
-            email=personal.email
+            email=personal.email,
+            notify=personal.notify
         ).returning(
             ORMPersonal.id_personal,
             ORMPersonal.name,
             ORMPersonal.position,
             ORMPersonal.area,
-            ORMPersonal.email
+            ORMPersonal.email,
+            ORMPersonal.notify
         )
         try:
             result = await self.session.execute(stmt)
@@ -34,7 +36,8 @@ class PersonalRepository:
                     name=row.name,
                     position=row.position,
                     area=row.area,
-                    email=row.email
+                    email=row.email,
+                    notify=row.notify
                 )
         except IntegrityError as e:
             await self.session.rollback()
@@ -50,7 +53,8 @@ class PersonalRepository:
                 name=orm_personal.name,
                 position=orm_personal.position,
                 area=orm_personal.area,
-                email=orm_personal.email
+                email=orm_personal.email,
+                notify=orm_personal.notify
             )
         return None
 
@@ -64,7 +68,8 @@ class PersonalRepository:
                 name=p.name,
                 position=p.position,
                 area=p.area,
-                email=p.email
+                email=p.email,
+                notify=p.notify
             ) for p in orm_personals
         ]
 
@@ -73,13 +78,15 @@ class PersonalRepository:
             name=personal.name,
             position=personal.position,
             area=personal.area,
-            email=personal.email
+            email=personal.email,
+            notify=personal.notify
         ).returning(
             ORMPersonal.id_personal,
             ORMPersonal.name,
             ORMPersonal.position,
             ORMPersonal.area,
-            ORMPersonal.email
+            ORMPersonal.email,
+            ORMPersonal.notify
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
@@ -90,7 +97,8 @@ class PersonalRepository:
                 name=row.name,
                 position=row.position,
                 area=row.area,
-                email=row.email
+                email=row.email,
+                notify=row.notify
             )
         return None
 
