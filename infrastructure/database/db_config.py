@@ -1,29 +1,31 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from psycopg2 import connect, sql
-from psycopg2.errors import DuplicateDatabase
 from urllib.parse import urlparse
+from psycopg2 import connect, sql
 from config import settings
+import asyncio
+import nest_asyncio
+from sqlalchemy import select
+from infrastructure.orm.models import Role, User
+from infrastructure.orm.base import Base  # ← Base definida en base.py
 
-DATABASE_URL = settings.DATABASE_URL 
+# Configuración de la base de datos desde la URL
+DATABASE_URL = settings.DATABASE_URL
 
 parsed_url = urlparse(DATABASE_URL)
-db_name = parsed_url.path[1:] 
+db_name = parsed_url.path[1:]
 db_user = parsed_url.username
 db_password = parsed_url.password
 db_host = parsed_url.hostname
 db_port = parsed_url.port
 
+# Verifica si la base de datos existe y la crea si no
 def verify_and_create_database():
-    """
-    Verifica si la base de datos existe y, si no, la crea.
-    """
+    conn = None
     try:
-        # Conectar al servidor PostgreSQL
         conn = connect(
-            dbname="postgres", 
+            dbname="postgres",
             user=db_user,
             password=db_password,
             host=db_host,
@@ -31,40 +33,75 @@ def verify_and_create_database():
         )
         conn.autocommit = True
         cursor = conn.cursor()
-
-        # Verificar si la base de datos existe
-        cursor.execute(sql.SQL(
-            "SELECT 1 FROM pg_database WHERE datname = %s"
-        ), [db_name])
+        cursor.execute(sql.SQL("SELECT 1 FROM pg_database WHERE datname = %s"), [db_name])
         exists = cursor.fetchone()
-
         if exists:
             print(f"La base de datos '{db_name}' ya existe.")
         else:
-            # Crear la base de datos
-            cursor.execute(sql.SQL(
-                "CREATE DATABASE {}"
-            ).format(sql.Identifier(db_name)))
+            cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
             print(f"La base de datos '{db_name}' ha sido creada.")
-
+        cursor.close()
     except Exception as e:
         print(f"Error al verificar o crear la base de datos: {e}")
     finally:
         if conn:
-            cursor.close()
             conn.close()
 
-verify_and_create_database()
-
+# Engine y sesión para SQLAlchemy asíncrono
 engine = create_async_engine(DATABASE_URL, echo=True)
-
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
-Base = declarative_base()
-
-
-
-
+# Generador de sesión para FastAPI
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
+
+# Crea todas las tablas del modelo
+async def init_models():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+# Crea los roles y el usuario inicial
+async def create_default_roles_and_user():
+    async with SessionLocal() as session:
+        try:
+            print("Verificando existencia de roles...")
+            result = await session.execute(select(Role).where(Role.id_role.in_([1, 2])))
+            roles = result.scalars().all()
+            role_ids = [r.id_role for r in roles]
+
+            if 1 not in role_ids:
+                session.add(Role(id_role=1, name="super", state=True))
+                print("Rol 'super' creado.")
+            if 2 not in role_ids:
+                session.add(Role(id_role=2, name="admin", state=True))
+                print("Rol 'admin' creado.")
+            await session.commit()
+
+            print("Verificando existencia del usuario 'Super Visor'...")
+            result = await session.execute(select(User).where(User.username == "Super Visor"))
+            existing_user = result.scalar()
+
+            if not existing_user:
+                admin_user = User(
+                    username="Super Visor",
+                    password="primeravez",  # CONTRASEÑA EN TEXTO PLANO
+                    role_id=1  # rol 'super'
+                )
+                session.add(admin_user)
+                await session.commit()
+                print("Usuario 'Super Visor' creado correctamente con contraseña 'primeravez'.")
+            else:
+                print("El usuario 'Super Visor' ya existe.")
+
+        except Exception as e:
+            await session.rollback()
+            print(f"❌ Error al crear roles o usuario: {e}")
+
+# === EJECUCIÓN AUTOMÁTICA AL IMPORTAR ===
+verify_and_create_database()
+
+nest_asyncio.apply()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(init_models())
+loop.run_until_complete(create_default_roles_and_user())
