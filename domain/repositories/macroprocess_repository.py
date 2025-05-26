@@ -50,7 +50,7 @@ class MacroprocessRepository:
         return None
 
     async def delete_macroprocess(self, macroprocess_id: int) -> None:
-        stmt = delete(ORMMacroprocess).where(ORMMacroprocess.id == macroprocess_id)
+        stmt = delete(ORMMacroprocess).where(ORMMacroprocess.id_macro == macroprocess_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

@@ -67,7 +67,7 @@ class ChannelRepository:
         return None
     
     async def delete_channel(self, channel_id:int) -> None:
-        stmt = delete(ORMChannel).where(ORMChannel.id == channel_id)
+        stmt = delete(ORMChannel).where(ORMChannel.id_channel == channel_id)
         result= await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount==0:
