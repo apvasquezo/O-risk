@@ -2,4 +2,6 @@ venv/
 .env
 *.pyc
 .terraform/
+*.tfstate
+*.tfstate.backup
 id_rsa
