@@ -38,6 +38,7 @@ class PersonalResponse(BaseModel):
 
 @router.post("/", response_model=PersonalResponse)
 async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+    print("que llega a controller ", personal)
     repository = PersonalRepository(db)
     created = await create_personal(personal, repository)
     return PersonalResponse(**created.model_dump())

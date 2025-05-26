@@ -11,6 +11,7 @@ class PersonalRepository:
         self.session = session
 
     async def create_personal(self, personal: PersonalEntity) -> PersonalEntity:
+        print ("estoy en repository ", personal)
         stmt = insert(ORMPersonal).values(
             id_personal=personal.id_personal,
             name=personal.name,
