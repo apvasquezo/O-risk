@@ -11,7 +11,7 @@ from sqlalchemy import (
     DateTime
 )
 from sqlalchemy.orm import relationship
-from ..database.db_config import Base
+from ..orm.base import Base
 
 class Role(Base):
     __tablename__ = "roles"
