@@ -24,7 +24,7 @@ class ManageRiskCategoriesUseCase:
         category = await self.repository.get_risk_category(risk_category_id)
         if not category:
             raise ValueError(f"RiskCategory with id {risk_category_id} does not exist")
-        updated_category = Risk_Category(id=category.id_riskcategory, description=description)
+        updated_category = Risk_Category(id=risk_category_id, description=description)
         return await self.repository.update_risk_category(risk_category_id, updated_category)
 
     async def delete_risk_category(self, risk_category_id: int) -> None:
