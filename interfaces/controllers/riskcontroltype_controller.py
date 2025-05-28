@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from infrastructure.database.db_config import get_db
+from infrastructure.database.db_config import get_async_session
 from domain.repositories.risk_control_type_repository import RiskControlTypeRepository
 from application.use_case.manage_riskcontroltype import (
     create_risk_control_type,
@@ -27,13 +27,13 @@ class RiskControlTypeResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=RiskControlTypeResponse, status_code=201)
-async def create_risk_control_type_endpoint(control_type: RiskControlTypeCreate, db: AsyncSession = Depends(get_db)):
+async def create_risk_control_type_endpoint(control_type: RiskControlTypeCreate, db: AsyncSession = Depends(get_async_session)):
     repository = RiskControlTypeRepository(db)
     created = await create_risk_control_type(control_type, repository)
     return RiskControlTypeResponse(**created.model_dump())
 
 @router.get("/{control_type_id}", response_model=RiskControlTypeResponse)
-async def read_risk_control_type_endpoint(control_type_id: int, db: AsyncSession = Depends(get_db)):
+async def read_risk_control_type_endpoint(control_type_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = RiskControlTypeRepository(db)
     control_type = await get_risk_control_type(control_type_id, repository)
     if not control_type:
@@ -41,13 +41,13 @@ async def read_risk_control_type_endpoint(control_type_id: int, db: AsyncSession
     return RiskControlTypeResponse(**control_type.model_dump())
 
 @router.get("/", response_model=List[RiskControlTypeResponse])
-async def read_all_risk_control_types_endpoint(db: AsyncSession = Depends(get_db)):
+async def read_all_risk_control_types_endpoint(db: AsyncSession = Depends(get_async_session)):
     repository = RiskControlTypeRepository(db)
     control_types = await get_all_risk_control_types(repository)
     return [RiskControlTypeResponse(**ct.model_dump()) for ct in control_types]
 
 @router.put("/{control_type_id}", response_model=RiskControlTypeResponse)
-async def update_risk_control_type_endpoint(control_type_id: int, control_type: RiskControlTypeCreate, db: AsyncSession = Depends(get_db)):
+async def update_risk_control_type_endpoint(control_type_id: int, control_type: RiskControlTypeCreate, db: AsyncSession = Depends(get_async_session)):
     repository = RiskControlTypeRepository(db)
     updated = await update_risk_control_type(control_type_id, control_type, repository)
     if not updated:
@@ -55,7 +55,7 @@ async def update_risk_control_type_endpoint(control_type_id: int, control_type: 
     return RiskControlTypeResponse(**updated.model_dump())
 
 @router.delete("/{control_type_id}", response_model=dict)
-async def delete_risk_control_type_endpoint(control_type_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_risk_control_type_endpoint(control_type_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = RiskControlTypeRepository(db)
     await delete_risk_control_type(control_type_id, repository)
     return {"detail": "Tipo de control eliminado"}

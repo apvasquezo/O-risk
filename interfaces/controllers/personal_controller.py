@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from infrastructure.database.db_config import get_db
+from infrastructure.database.db_config import get_async_session
 from domain.repositories.personal_repository import PersonalRepository
 from application.use_case.manage_personal import (
     create_personal,
@@ -37,14 +37,14 @@ class PersonalResponse(BaseModel):
 
 
 @router.post("/", response_model=PersonalResponse)
-async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+async def create_personal_endpoint(personal: PersonalCreate, db: AsyncSession = Depends(get_async_session)):
     print("que llega a controller ", personal)
     repository = PersonalRepository(db)
     created = await create_personal(personal, repository)
     return PersonalResponse(**created.model_dump())
 
 @router.get("/{personal_id}", response_model=PersonalResponse)
-async def read_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
+async def read_personal(personal_id: str, db: AsyncSession = Depends(get_async_session)):
     repository = PersonalRepository(db)
     person = await get_personal(personal_id, repository)
     if person is None:
@@ -52,13 +52,13 @@ async def read_personal(personal_id: str, db: AsyncSession = Depends(get_db)):
     return PersonalResponse(**person.model_dump())
 
 @router.get("/", response_model=List[PersonalResponse])
-async def read_all_personal(db: AsyncSession = Depends(get_db)):
+async def read_all_personal(db: AsyncSession = Depends(get_async_session)):
     repository = PersonalRepository(db)
     persons = await get_all_personal(repository)
     return [PersonalResponse(**p.model_dump()) for p in persons]
 
 @router.put("/{personal_id}", response_model=PersonalResponse)
-async def update_personal_endpoint(personal_id: str, personal: PersonalCreate, db: AsyncSession = Depends(get_db)):
+async def update_personal_endpoint(personal_id: str, personal: PersonalCreate, db: AsyncSession = Depends(get_async_session)):
     repository = PersonalRepository(db)
     updated = await update_personal(personal_id, personal, repository)
     if updated is None:
@@ -66,7 +66,7 @@ async def update_personal_endpoint(personal_id: str, personal: PersonalCreate, d
     return PersonalResponse(**updated.__dict__)
 
 @router.delete("/{personal_id}", response_model=dict)
-async def delete_personal_endpoint(personal_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_personal_endpoint(personal_id: str, db: AsyncSession = Depends(get_async_session)):
     repository = PersonalRepository(db)
     try:
         await delete_personal(personal_id, repository)

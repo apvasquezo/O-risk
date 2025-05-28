@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from infrastructure.database.db_config import get_db
+from infrastructure.database.db_config import get_async_session
 from domain.repositories.notification_repository import NotificationRepository
 from application.use_case.manage_notification import (
     create_notification,
@@ -36,13 +36,13 @@ class NotificationResponse(BaseModel):
     eventlog_id: int
 
 @router.post("/", response_model=NotificationResponse, status_code=201)
-async def create_notification_endpoint(notification: NotificationCreate, db: AsyncSession = Depends(get_db)):
+async def create_notification_endpoint(notification: NotificationCreate, db: AsyncSession = Depends(get_async_session)):
     repository = NotificationRepository(db)
     created = await create_notification(notification, repository)
     return NotificationResponse(**created.model_dump())
 
 @router.get("/{notification_id}", response_model=NotificationResponse)
-async def read_notification_endpoint(notification_id: int, db: AsyncSession = Depends(get_db)):
+async def read_notification_endpoint(notification_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = NotificationRepository(db)
     notification = await get_notification(notification_id, repository)
     if not notification:
@@ -50,13 +50,13 @@ async def read_notification_endpoint(notification_id: int, db: AsyncSession = De
     return NotificationResponse(**notification.model_dump())
 
 @router.get("/", response_model=List[NotificationResponse])
-async def read_all_notifications_endpoint(db: AsyncSession = Depends(get_db)):
+async def read_all_notifications_endpoint(db: AsyncSession = Depends(get_async_session)):
     repository = NotificationRepository(db)
     notifications = await get_all_notifications(repository)
     return [NotificationResponse(**n.model_dump()) for n in notifications]
 
 @router.put("/{notification_id}", response_model=NotificationResponse)
-async def update_notification_endpoint(notification_id: int, notification: NotificationCreate, db: AsyncSession = Depends(get_db)):
+async def update_notification_endpoint(notification_id: int, notification: NotificationCreate, db: AsyncSession = Depends(get_async_session)):
     repository = NotificationRepository(db)
     updated = await update_notification(notification_id, notification, repository)
     if not updated:
@@ -64,7 +64,7 @@ async def update_notification_endpoint(notification_id: int, notification: Notif
     return NotificationResponse(**updated.model_dump())
 
 @router.delete("/{notification_id}", response_model=dict)
-async def delete_notification_endpoint(notification_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_notification_endpoint(notification_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = NotificationRepository(db)
     await delete_notification(notification_id, repository)
     return {"detail": "Notificación eliminada"}

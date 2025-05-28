@@ -52,9 +52,12 @@ engine = create_async_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
 # Generador de sesión para FastAPI
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
+
+# Alias para que otros archivos que usan "get_db" no fallen
+get_db = get_async_session
 
 # Crea todas las tablas del modelo
 async def init_models():
@@ -96,7 +99,7 @@ async def create_default_roles_and_user():
 
         except Exception as e:
             await session.rollback()
-            print(f"❌ Error al crear roles o usuario: {e}")
+            print(f"Error al crear roles o usuario: {e}")
 
 # === EJECUCIÓN AUTOMÁTICA AL IMPORTAR ===
 verify_and_create_database()
