@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
 
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:risk@localhost:5432/riskcontrol" 
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:Carpeta24*@localhost:5432/riskcontrol" 
 
     print ("estamos en config", DATABASE_URL)
     class Config:

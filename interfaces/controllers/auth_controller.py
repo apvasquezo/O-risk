@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from domain.repositories.user_repository import UserRepository
 from application.use_case.manage_user import get_user_username
-from infrastructure.database.db_config import get_db
+from infrastructure.database.db_config import get_async_session
 from utils.auth import verify_password, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
@@ -18,7 +18,7 @@ class TokenResponse(BaseModel):
     role: str  
 
 @router.post("/login", response_model=TokenResponse)
-async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(user: UserLogin, db: AsyncSession = Depends(get_async_session)):
     repository = UserRepository(db)
     db_user = await get_user_username(user.username, repository)
 

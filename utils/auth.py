@@ -5,6 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 
+
 # Configuración para JWT
 SECRET_KEY = "tu_secreto_super_seguro"  # Cambia esto por una clave secreta más segura
 ALGORITHM = "HS256"

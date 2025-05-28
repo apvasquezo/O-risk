@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-from infrastructure.database.db_config import get_db
+from infrastructure.database.db_config import get_async_session
 from domain.repositories.cause_repository import CauseRepository
 from application.use_case.manage_cause import (
     create_cause,
@@ -27,13 +27,13 @@ class CauseResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=CauseResponse, status_code=201)
-async def create_cause_endpoint(cause: CauseCreate, db: AsyncSession = Depends(get_db)):
+async def create_cause_endpoint(cause: CauseCreate, db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     created = await create_cause(cause, repository)
     return CauseResponse(**created.model_dump())
 
 @router.get("/{cause_id}", response_model=CauseResponse)
-async def read_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_db)):
+async def read_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     cause = await get_cause(cause_id, repository)
     if not cause:
@@ -41,13 +41,13 @@ async def read_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_db))
     return CauseResponse(**cause.model_dump())
 
 @router.get("/", response_model=List[CauseResponse])
-async def read_all_causes_endpoint(db: AsyncSession = Depends(get_db)):
+async def read_all_causes_endpoint(db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     causes = await get_all_cause(repository)
     return [CauseResponse(**c.model_dump()) for c in causes]
 
 @router.put("/{cause_id}", response_model=CauseResponse)
-async def update_cause_endpoint(cause_id: int, cause: CauseCreate, db: AsyncSession = Depends(get_db)):
+async def update_cause_endpoint(cause_id: int, cause: CauseCreate, db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     updated = await update_cause(cause_id, cause, repository)
     if not updated:
@@ -55,7 +55,7 @@ async def update_cause_endpoint(cause_id: int, cause: CauseCreate, db: AsyncSess
     return CauseResponse(**updated.model_dump())
 
 @router.delete("/{cause_id}", status_code=204)
-async def delete_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     await delete_cause(cause_id, repository)
     return {"detail": "Causa eliminada"}
