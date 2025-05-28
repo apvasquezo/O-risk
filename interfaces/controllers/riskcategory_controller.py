@@ -44,7 +44,7 @@ async def read_all_risk_categories_endpoint(db: AsyncSession = Depends(get_db)):
     repository = RiskCategoryRepository(db)
     use_case = ManageRiskCategoriesUseCase(repository)
     categories = await use_case.get_all_risk_categories()
-    return [RiskCategoryResponse(**c.model_dump()) for c in categories]
+    return [RiskCategoryResponse(**r.__dict__) for r in categories]
 
 @router.put("/{risk_category_id}", response_model=RiskCategoryResponse)
 async def update_risk_category_endpoint(risk_category_id: int, risk_category: RiskCategoryCreate, db: AsyncSession = Depends(get_db)):
