@@ -21,14 +21,10 @@ router = APIRouter(
 
 class ConsequenceCreate(BaseModel):
     description: str
-    risk_factor_id: int
-    event_id: int
 
 class ConsequenceResponse(BaseModel):
     id_consequence: int
     description: str
-    risk_factor_id: int
-    event_id: int
 
 @router.post("/", response_model=ConsequenceResponse, status_code=201)
 async def create_consequence_endpoint(consequence: ConsequenceCreate, db: AsyncSession = Depends(get_async_session)):

@@ -17,7 +17,7 @@ from infrastructure.orm.models import Role, User
 from infrastructure.orm.base import Base  # ← Base definida en base.py
 
 # Configuración de la base de datos desde la URL
-DATABASE_URL = settings.DATABASE_URL
+DATABASE_URL = settings.DATABASE_URL 
 # Configuración de la base de datos desde la URL
 DATABASE_URL = settings.DATABASE_URL
 
