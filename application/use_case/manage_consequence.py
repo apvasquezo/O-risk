@@ -10,8 +10,8 @@ async def get_consequence(consequence_id:int, repository:ConsequenceRepository):
 async def get_all_consequence(repository:ConsequenceRepository):
     return await repository.get_all_consequence()
 
-async def update_consequence(consequence_id:int, repository:ConsequenceRepository):
-    return await repository.update_consequence(consequence_id)
+async def update_consequence(consequence_id:int, consequence:Consequence, repository:ConsequenceRepository):
+    return await repository.update_consequence(consequence_id, consequence)
 
 async def delete_consequence(consequence_id:int, repository:ConsequenceRepository):
     return await repository.delete_consequence(consequence_id)

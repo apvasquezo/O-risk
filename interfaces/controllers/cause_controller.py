@@ -21,14 +21,10 @@ router = APIRouter(
 
 class CauseCreate(BaseModel):
     description: str
-    risk_factor_id: int
-    event_id: int
 
 class CauseResponse(BaseModel):
     id_cause: int
     description: str
-    risk_factor_id: int
-    event_id: int
 
 @router.post("/", response_model=CauseResponse, status_code=201)
 async def create_cause_endpoint(cause: CauseCreate, db: AsyncSession = Depends(get_db)):
