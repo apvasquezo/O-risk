@@ -1,10 +1,12 @@
 import jwt
 import hashlib
 from datetime import datetime, timedelta
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from infrastructure.database.db_config import get_async_session
+from domain.entities.User import User as UserEntity
+from domain.repositories.user_repository import UserRepository 
 
 # Configuración para JWT
 SECRET_KEY = "tu_secreto_super_seguro"  # Cambia esto por una clave secreta más segura
@@ -59,3 +61,22 @@ def role_required(required_role: str):
             raise HTTPException(status_code=403, detail="Insufficient permissions")
         return payload
     return role_dependency
+
+# NUEVA: Obtener usuario autenticado desde el token
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    session: AsyncSession = Depends(get_async_session)
+) -> UserEntity:
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    user_id = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="Token sin ID de usuario")
+
+    repo = UserRepository(session)
+    user = await repo.get_user(user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return user

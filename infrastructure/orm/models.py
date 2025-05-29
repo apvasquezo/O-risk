@@ -37,16 +37,13 @@ class Cause(Base):
     
     id_cause = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String(255), nullable=False)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=False)
-    event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
 
 class Consequence(Base):
     __tablename__ = 'consequence'
     
     id_consequence = Column(Integer, primary_key=True, autoincrement=True)
     description = Column(String(255), nullable=False)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=False)
-    event_id = Column(Integer, ForeignKey('events.id_event'), nullable=False)
+    
 class Channel(Base):
     __tablename__ = "channels"
     

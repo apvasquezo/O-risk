@@ -2,8 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from infrastructure.database.db_config import Base, engine
-from routers import recover
-
 
 # Importa todos los routers
 from interfaces.controllers import (
@@ -29,6 +27,8 @@ from interfaces.controllers import (
     notification_controller,
     history_controller,
     eventLog_controller,
+    recover_controller,
+    profile_controller,
 )
 
 @asynccontextmanager
@@ -77,7 +77,8 @@ def create_app() -> FastAPI:
         notification_controller.router,
         history_controller.router,
         eventLog_controller.router,
-        recover.router,
+        recover_controller.router,
+        profile_controller.router,
     ]
 
     for router in routers:

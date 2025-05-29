@@ -6,6 +6,8 @@ from sqlalchemy import select
 from typing import List, Optional
 from infrastructure.orm.models import User as ORMUser
 from domain.entities.User import User as UserEntity
+from passlib.context import CryptContext
+from domain.dto.user_update_dto import UserUpdateDTO
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
@@ -57,7 +59,8 @@ class UserRepository:
                 id_user=orm_user.id_user,
                 username=orm_user.username,
                 password=orm_user.password,
-                role_id=orm_user.role_id
+                role_id=orm_user.role_id,
+                role_name=orm_user.role.name
             )
         return None
 
@@ -74,10 +77,10 @@ class UserRepository:
             ) for u in orm_users
         ]
 
-    async def update_user(self, user_id: int, user: UserEntity) -> Optional[UserEntity]:
-        stmt = update(ORMUser).where(ORMUser.id_user == user_id).values(
-            username=user.username, 
-            password=user.password, 
+    async def update_user(self, user: UserEntity) -> Optional[UserEntity]:
+        stmt = update(ORMUser).where(ORMUser.id_user == user.id_user).values(
+            username=user.username,
+            password=user.password,
             role_id=user.role_id
         ).returning(ORMUser.id_user, ORMUser.username, ORMUser.role_id)
         result = await self.session.execute(stmt)
@@ -85,9 +88,9 @@ class UserRepository:
         row = result.fetchone()
         if row:
             return UserEntity(
-                id_user=row.id_user, 
-                username=row.username, 
-                password=user.password, 
+                id_user=row.id_user,
+                username=row.username,
+                password=user.password,
                 role_id=row.role_id
             )
         return None
@@ -98,3 +101,4 @@ class UserRepository:
         await self.session.commit()
         if result.rowcount == 0:
             raise ValueError(f"User with id {user_id} not found")
+

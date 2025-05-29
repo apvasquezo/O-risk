@@ -13,13 +13,11 @@ class CauseRepository:
     async def create_cause(self, cause:CauseEntity)-> CauseEntity:
         stmt=insert(Cause).values(
             description=cause.description,
-            risk_factor_id=cause.risk_factor_id,
-            event_id=cause.event_id
-        ).returing(
-            Cause.id,
+            
+        ).returning(
+            Cause.id_cause,
             Cause.description,
-            Cause.risk_factor_id,
-            Cause.event_id
+          
         )
         try:
             result = await self.session.execute(stmt)
@@ -27,10 +25,9 @@ class CauseRepository:
             row=result.fetchone()
             if row:
                 return CauseEntity(
-                    id=row.id,
+                    id_cause=row.id_cause,
                     description=row.description,
-                    risk_factor_id=row.risk_factor_id,
-                    event_id=row.event_id
+                  
                 )
         except IntegrityError as e:
             await self.session.rollback()
@@ -44,8 +41,7 @@ class CauseRepository:
             return CauseEntity(
                 id=cause.id,
                 description=cause.description,
-                risk_factor_id=cause.risk_factor_id,
-                event_id=cause.event_id
+                
             )
         return None
     
@@ -55,38 +51,34 @@ class CauseRepository:
         causes = result.scalars().all()
         return [
             CauseEntity(
-                id=c.id,
+                id_cause=c.id_cause,
                 description=c.description,
-                risk_factor_id=c.risk_factor_id,
-                event_id=c.event_id
+                
             ) for c in causes
         ]
         
     async def update_causes(self,cause_id:int, cause:CauseEntity)-> Optional[CauseEntity]:
-        stmt = update(Cause).where(Cause.id == cause_id).values(
+        stmt = update(Cause).where(Cause.id_cause == cause_id).values(
             description=cause.description,
-            risk_factor_id=cause.risk_factor_id,
-            event_id=cause.event_id
+            
         ).returning(
-            Cause.id,
+            Cause.id_cause,
             Cause.description,
-            Cause.risk_factor_id,
-            Cause.event_id
+          
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
         row = result.fetchone()
         if row:
             return CauseEntity(
-                id=row.id,
+                id_cause=row.id_cause,
                 description=row.description,
-                risk_factor_id=row.risk_factor_id,
-                event_id=row.event_id
+               
             )
         return None
     
     async def delete_cause(self, cause_id:int)->None:
-        stmt = delete(Cause).where(Cause.id == cause_id)
+        stmt = delete(Cause).where(Cause.id_cause == cause_id)
         result= await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount==0:

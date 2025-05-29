@@ -8,3 +8,4 @@ class User(BaseModel):
     role_id:int
     created_at:Optional[str]=None
     updated_at:Optional[str]=None
+    role_name: Optional[str] = None 

@@ -8,9 +8,9 @@ import asyncio
 import nest_asyncio
 from sqlalchemy import select
 from infrastructure.orm.models import Role, User
-from infrastructure.orm.base import Base  # ← Base definida en base.py
+from infrastructure.orm.base import Base  
 
-# Configuración de la base de datos desde la URL
+
 DATABASE_URL = settings.DATABASE_URL
 
 parsed_url = urlparse(DATABASE_URL)
@@ -20,7 +20,7 @@ db_password = parsed_url.password
 db_host = parsed_url.hostname
 db_port = parsed_url.port
 
-# Verifica si la base de datos existe y la crea si no
+
 def verify_and_create_database():
     conn = None
     try:
@@ -47,24 +47,23 @@ def verify_and_create_database():
         if conn:
             conn.close()
 
-# Engine y sesión para SQLAlchemy asíncrono
+
 engine = create_async_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
-# Generador de sesión para FastAPI
+
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
 
-# Alias para que otros archivos que usan "get_db" no fallen
+
 get_db = get_async_session
 
-# Crea todas las tablas del modelo
+
 async def init_models():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-
-# Crea los roles y el usuario inicial
+        
 async def create_default_roles_and_user():
     async with SessionLocal() as session:
         try:
@@ -88,8 +87,8 @@ async def create_default_roles_and_user():
             if not existing_user:
                 admin_user = User(
                     username="Super Visor",
-                    password="primeravez",  # CONTRASEÑA EN TEXTO PLANO
-                    role_id=1  # rol 'super'
+                    password="primeravez",  
+                    role_id=1  
                 )
                 session.add(admin_user)
                 await session.commit()
@@ -101,7 +100,7 @@ async def create_default_roles_and_user():
             await session.rollback()
             print(f"Error al crear roles o usuario: {e}")
 
-# === EJECUCIÓN AUTOMÁTICA AL IMPORTAR ===
+
 verify_and_create_database()
 
 nest_asyncio.apply()
