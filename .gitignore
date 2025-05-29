@@ -5,4 +5,8 @@ venv/
 .tfstate
 .tfstate.backup
 id_rsa
+<<<<<<< HEAD
 __pycache__/
+=======
+__pycache__
+>>>>>>> 84cdabe9065ec5be1f10156f5424032c15c5f16e
