@@ -13,7 +13,7 @@ class ProductRepository:
         stmt = insert(ORMProductService).values(
             description=product.description
             ).returning(
-                ORMProductService.id_product, 
+                ORMProductService.id_product,
                 ORMProductService.description
             )
         result = await self.session.execute(stmt)

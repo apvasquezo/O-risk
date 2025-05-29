@@ -8,9 +8,16 @@ import asyncio
 import nest_asyncio
 from sqlalchemy import select
 from infrastructure.orm.models import Role, User
-from infrastructure.orm.base import Base
+from infrastructure.orm.base import Base  # ← Base definida en base.py
+import asyncio
+import nest_asyncio
+from sqlalchemy import select
+from infrastructure.orm.models import Role, User
+from infrastructure.orm.base import Base  # ← Base definida en base.py
 
-
+# Configuración de la base de datos desde la URL
+DATABASE_URL = settings.DATABASE_URL 
+# Configuración de la base de datos desde la URL
 DATABASE_URL = settings.DATABASE_URL
 
 

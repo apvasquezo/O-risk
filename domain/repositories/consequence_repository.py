@@ -13,11 +13,9 @@ class ConsequenceRepository:
     async def create_consequence(self, consequence:ConsequenceEntity)-> ConsequenceEntity:
         stmt=insert(Consequence).values(
             description=consequence.description,
-           
         ).returning(
             Consequence.id_consequence,
             Consequence.description,
-            
         )
         try:
             result = await self.session.execute(stmt)
@@ -27,7 +25,6 @@ class ConsequenceRepository:
                 return ConsequenceEntity(
                     id_consequence=row.id_consequence,
                     description=row.description,
-                    
                 )
         except IntegrityError as e:
             await self.session.rollback()
@@ -41,7 +38,6 @@ class ConsequenceRepository:
             return ConsequenceEntity(
                 id_consequence=Consequence.id_consequence,
                 description=Consequence.description,
-               
             )
         return None
     
@@ -53,18 +49,15 @@ class ConsequenceRepository:
             ConsequenceEntity(
                 id_consequence=c.id_consequence,
                 description=c.description,
-             
             ) for c in consequence
         ]
         
     async def update_consequence(self,consequence_id:int, consequence:ConsequenceEntity)-> Optional[ConsequenceEntity]:
         stmt = update(Consequence).where(Consequence.id_consequence == consequence_id).values(
             description=consequence.description,
-            
         ).returning(
             Consequence.id_consequence,
             Consequence.description,
-            
         )
         result = await self.session.execute(stmt)
         await self.session.commit()
@@ -73,7 +66,6 @@ class ConsequenceRepository:
             return ConsequenceEntity(
                 id_consequence=row.id_consequence,
                 description=row.description,
-                
             )
         return None
     

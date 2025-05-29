@@ -9,7 +9,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/macroprocesses",
     tags=["Macroprocesos"],
-    dependencies=[Depends(role_required("super"))]
+    #dependencies=[Depends(role_required("super"))]
 )
 
 class MacroprocessCreate(BaseModel):
@@ -20,7 +20,7 @@ class MacroprocessResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=MacroprocessResponse, status_code=201)
-async def create_macroprocess(macroprocess: MacroprocessCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_macroprocess(macroprocess: MacroprocessCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = MacroprocessRepository(db)
     created = await repository.create_macroprocess(macroprocess)
     return MacroprocessResponse(**created.model_dump())

@@ -10,8 +10,8 @@ async def get_cause(cause_id:int, repository:CauseRepository):
 async def get_all_cause(repository:CauseRepository):
     return await repository.get_all_cause()
 
-async def update_cause(case_id:int, cause:Causes, repository:CauseRepository):
-    return await repository.update_causes(case_id,cause)
+async def update_cause(case_id:int, cause:Causes ,repository:CauseRepository):
+    return await repository.update_causes(case_id, cause)
 
 async def delete_cause(case_id:int, repository:CauseRepository):
     return await repository.delete_cause(case_id)
