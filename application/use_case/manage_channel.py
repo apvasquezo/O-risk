@@ -1,4 +1,3 @@
-from typing import List, Optional
 from domain.entities.channel import Channels
 from domain.repositories.channel_repository import ChannelRepository
 

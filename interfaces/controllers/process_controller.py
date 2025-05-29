@@ -32,6 +32,7 @@ class ProcessResponse(BaseModel):
 
 @router.post("/", response_model=ProcessResponse, status_code=201)
 async def create_process_endpoint(process: ProcessCreate, db: AsyncSession = Depends(get_async_session)):
+    print("que llega al controller ", process)
     repository = ProcessRepository(db)
     created = await create_process(process, repository)
     return ProcessResponse(**created.model_dump())
