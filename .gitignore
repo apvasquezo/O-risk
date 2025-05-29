@@ -1,7 +1,8 @@
 venv/
 .env
-.pyc
+*.pyc
 .terraform/
 .tfstate
 .tfstate.backup
 id_rsa
+__pycache__
