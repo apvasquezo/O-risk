@@ -21,19 +21,19 @@ router = APIRouter(
 )
 
 class PlanActionCreate (BaseModel):
-    description=str
-    star_date = datetime
-    end_date = datetime
-    personal_id = int
-    state=Optional[str]
+    description:str
+    star_date: datetime
+    end_date: datetime
+    personal_id: int
+    state:Optional[str]
 
 class PlanActionResponse (BaseModel):
-    id_plan = Optional[int]=None
-    description=str
-    star_date = datetime
-    end_date = datetime
-    personal_id = int
-    state=Optional[str] 
+    id_plan: Optional[int]=None
+    description:str
+    star_date: datetime
+    end_date: datetime
+    personal_id: str
+    state:Optional[str] 
     
 @router.post("/", response_model=PlanActionResponse, status_code=201)
 async def create_plan_action_endpoint(plan_type: PlanActionCreate, db: AsyncSession = Depends(get_async_session)):
