@@ -34,7 +34,7 @@ def enviar_correo(destinatario: str, nueva_contraseña: str):
         servidor.login(remitente, clave_app)
         servidor.send_message(mensaje)
 
-import bcrypt
+#import bcrypt
 
-def hashear_contraseña(password: str) -> str:
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+#def hashear_contraseña(password: str) -> str:
+    #return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
