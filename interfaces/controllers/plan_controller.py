@@ -34,6 +34,16 @@ class PlanActionResponse (BaseModel):
     end_date: datetime
     personal_id: str
     state:Optional[str] 
+
+class PlanActionResponseC (BaseModel):
+    id_plan: Optional[int]=None
+    description:str
+    star_date: datetime
+    end_date: datetime
+    personal_id: str
+    state:Optional[str] 
+    control_id:int
+    control_name:str   
     
 @router.post("/", response_model=PlanActionResponse, status_code=201)
 async def create_plan_action_endpoint(plan_type: PlanActionCreate, db: AsyncSession = Depends(get_async_session)):
@@ -49,12 +59,12 @@ async def read_plan(plan_id:int, db: AsyncSession = Depends(get_async_session)):
         raise HTTPException(status_code=404, detail="Tipo de plan no encontrado")
     return PlanActionResponse(**plan_type.model_dump())
 
-@router.get("/", response_model=List[PlanActionResponse])
+@router.get("/", response_model=List[PlanActionResponseC])
 async def read_all_plan(db: AsyncSession = Depends(get_async_session)):
-    print ("entre al controller")
     repository = PlanRepository(db)
     plan_type = await get_all_plans(repository)
-    return [PlanActionResponse(**p.model_dump()) for p in plan_type]
+    print ("trae del repo ", plan_type)   
+    return [PlanActionResponseC(**p.model_dump()) for p in plan_type]
 
 @router.put("/{plan_id}", response_model=PlanActionResponse)
 async def update_plan_endpoint(plan_id:int, plan_type:PlanActionCreate, db: AsyncSession = Depends(get_async_session)):

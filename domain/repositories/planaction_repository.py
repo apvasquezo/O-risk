@@ -4,10 +4,13 @@ from sqlalchemy import insert, update, delete
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import Plan_action as ORMPlan
+from infrastructure.orm.models import Control_action as ORMControlAction
+from infrastructure.orm.models import Control as ORMControl
 from domain.entities.Plan_action import Plan_action as PlanEntity
+from domain.entities.Control_action import Control_action as ControlActionEntity
 class PlanRepository:
     def __init__(self, session: AsyncSession):
-        self.session = session
+        self.session = session 
     
     async def create_plan(self, plan:PlanEntity)-> PlanEntity:
         stmt=insert(ORMPlan).values(
@@ -15,14 +18,14 @@ class PlanRepository:
             star_date=plan.star_date,
             end_date=plan.end_date,
             personal_id=plan.personal_id,
-            state=plan.state
+            state=plan.state,
         ).returing(
             ORMPlan.id_plan,
             ORMPlan.description,
             ORMPlan.star_date,
             ORMPlan.end_date,
             ORMPlan.personal_id,
-            ORMPlan.state
+            ORMPlan.state,
         )
         try:
             result = await self.session.execute(stmt)
@@ -35,7 +38,7 @@ class PlanRepository:
                     star_date=row.star_date,
                     end_date=row.end_date,
                     personal_id=row.personal_id,
-                    state=row.state
+                    state=row.state,
                 )
         except IntegrityError as e:
             await self.session.rollback()
@@ -58,19 +61,30 @@ class PlanRepository:
     
     async def get_all_plan(self)->List[PlanEntity]:
         print ("entre al repositorio")
-        stmt = select(ORMPlan)
-        print ("lo que busca ", stmt)
+        stmt = (select(ORMPlan.id_plan,
+               ORMPlan.description,
+               ORMPlan.star_date,
+               ORMPlan.end_date,
+               ORMPlan.personal_id,
+               ORMPlan.state,
+               ORMControl.id_control.label("control_id"),
+               ORMControl.description.label("control_name"))
+        .join(ORMControlAction, ORMPlan.id_plan == ORMControlAction.action_id)  # Relación con tabla intermedia
+        .join(ORMControl, ORMControlAction.control_id == ORMControl.id_control)  # Relación con tabla Control
+        )
         result = await self.session.execute(stmt)
-        plans = result.scalars().all()
+        print("lo que encuentra ", result.fetchall())
         return [
             PlanEntity(
-                id_plan=c.id_plan,
-                description=c.description,
-                star_date=c.star_date,
-                end_date=c.end_date,
-                personal_id=c.personal_id,
-                state=c.state,
-            ) for c in plans
+                id_plan=row.id_plan,
+                description=row.description,
+                star_date=row.star_date,
+                end_date=row.end_date,
+                personal_id=row.personal_id,
+                state=row.state,
+                control_id=row.control_id,
+                control_name=row.control_name,
+            ) for row in result.fetchall()         
         ]
         
     async def update_plan(self,plan_id:int, plan:PlanEntity)-> Optional[PlanEntity]:
