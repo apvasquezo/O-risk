@@ -57,5 +57,5 @@ async def update_profile_me(
     if new_password:
         user.password = new_password
 
-    await repo.update_user(user)
+    await repo.update_user(user.id_user, user)
     return {"message": "Perfil actualizado correctamente"}

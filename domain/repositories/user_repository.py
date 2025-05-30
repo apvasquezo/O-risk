@@ -77,7 +77,7 @@ class UserRepository:
             ) for u in orm_users
         ]
 
-    async def update_user(self, user: UserEntity) -> Optional[UserEntity]:
+    async def update_user(self, user_id: int, user: UserEntity) -> Optional[UserEntity]:
         stmt = update(ORMUser).where(ORMUser.id_user == user.id_user).values(
             username=user.username,
             password=user.password,
