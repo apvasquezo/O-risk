@@ -7,5 +7,5 @@ class Plan_action(BaseModel):
     description: str
     star_date: datetime
     end_date: datetime
-    personal_id: int
+    personal_id: str
     state:Optional[str] 

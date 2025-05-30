@@ -24,12 +24,15 @@ from interfaces.controllers import (
     process_controller,
     macroprocess_controller,
     plan_controller,
+    plancontrol_controller,
     personal_controller,
     channel_controller,
     product_controller,
     notification_controller,
     history_controller,
     eventLog_controller,
+    recover_controller,
+    profile_controller,
 )
 
 @asynccontextmanager
@@ -73,13 +76,15 @@ def create_app() -> FastAPI:
         process_controller.router,
         macroprocess_controller.router,
         plan_controller.router,
+        plancontrol_controller.router,
         personal_controller.router,
         channel_controller.router,
         product_controller.router,
         notification_controller.router,
         history_controller.router,
         eventLog_controller.router,
-        recover.router,
+        recover_controller.router,
+        profile_controller.router,
     ]
 
     for router in routers:
