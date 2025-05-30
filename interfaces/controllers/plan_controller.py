@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -49,8 +49,9 @@ async def read_plan(plan_id:int, db: AsyncSession = Depends(get_async_session)):
         raise HTTPException(status_code=404, detail="Tipo de plan no encontrado")
     return PlanActionResponse(**plan_type.model_dump())
 
-@router.get("/", response_model=PlanActionResponse)
+@router.get("/", response_model=List[PlanActionResponse])
 async def read_all_plan(db: AsyncSession = Depends(get_async_session)):
+    print ("entre al controller")
     repository = PlanRepository(db)
     plan_type = await get_all_plans(repository)
     return [PlanActionResponse(**p.model_dump()) for p in plan_type]

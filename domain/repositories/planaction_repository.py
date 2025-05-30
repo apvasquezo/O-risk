@@ -57,17 +57,19 @@ class PlanRepository:
         return None
     
     async def get_all_plan(self)->List[PlanEntity]:
+        print ("entre al repositorio")
         stmt = select(ORMPlan)
+        print ("lo que busca ", stmt)
         result = await self.session.execute(stmt)
         plans = result.scalars().all()
         return [
             PlanEntity(
-                id_plan=plans.id_plan,
-                description=plans.description,
-                star_date=plans.star_date,
-                end_date=plans.end_date,
-                personal_id=plans.personal_id,
-                state=plans.state
+                id_plan=c.id_plan,
+                description=c.description,
+                star_date=c.star_date,
+                end_date=c.end_date,
+                personal_id=c.personal_id,
+                state=c.state,
             ) for c in plans
         ]
         
