@@ -6,3 +6,6 @@ class Control_action(BaseModel):
     id_controlaction:Optional[int]=None
     control_id:int
     action_id:int
+    
+    
+    
