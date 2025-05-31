@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends
 from utils.auth import decode_token
-from domain.entities.User import User as UserEntity
 from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_async_session
 from domain.repositories.user_repository import UserRepository
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Header, HTTPException
+from fastapi import HTTPException
 from fastapi import Body
-from utils.hashing import get_password_hash
+
 
 router = APIRouter(prefix="/api/profile", tags=["profile"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -19,18 +18,13 @@ async def get_profile_me(
 ):
     payload = decode_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Token inválido o expirado")
-
+        raise HTTPException(status_code=401, detail="Usuario no encontrad")
     username = payload.get("sub")
-    repo = UserRepository(session)
-    user = await repo.get_user_username(username=username)
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
+    rol=payload.get("role")
     return {
 
-        "username": user.username,
-        "role": user.role_name
+        "username": username,
+        "role": rol
     }
 @router.put("/me")
 async def update_profile_me(

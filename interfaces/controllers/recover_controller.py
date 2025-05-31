@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from utils.email import enviar_correo, generar_contraseña
-from utils.schemas import RecoveryRequest
+from domain.entities.RecoveryRequest import RecoveryRequest
 from infrastructure.orm.models import User
 from infrastructure.database.db_config import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
