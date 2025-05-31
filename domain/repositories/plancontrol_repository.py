@@ -12,7 +12,7 @@ class PlanControlRepository:
         stmt=insert(ORMControlAction).values(
             control_id=planControl.control_id,
             action_id=planControl.action_id,
-        ).returing(
+        ).returning(
             ORMControlAction.control_id,
             ORMControlAction.action_id,
         )

@@ -1,4 +1,4 @@
-from domain.entities.Plan_action import Plan_action
+from domain.entities.Plan_action import Plan_action, PlanAction
 from domain.repositories.planaction_repository import PlanRepository
 
 async def create_plans(plan_data: Plan_action, repository: PlanRepository) -> Plan_action:
@@ -7,7 +7,7 @@ async def create_plans(plan_data: Plan_action, repository: PlanRepository) -> Pl
 async def get_plan(plan_id: int, repository: PlanRepository) -> Plan_action:
     return await repository.get_plan(plan_id)
 
-async def get_all_plans(repository: PlanRepository) -> list[Plan_action]:
+async def get_all_plans(repository: PlanRepository) -> list[PlanAction]:
     print ("entre al manager")
     return await repository.get_all_plan()
 
