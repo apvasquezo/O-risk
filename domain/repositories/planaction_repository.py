@@ -7,6 +7,7 @@ from infrastructure.orm.models import Plan_action as ORMPlan
 from infrastructure.orm.models import Control_action as ORMControlAction
 from infrastructure.orm.models import Control as ORMControl
 from domain.entities.Plan_action import Plan_action as PlanEntity
+from domain.entities.Plan_action import PlanAction
 from domain.entities.Control_action import Control_action as ControlActionEntity
 class PlanRepository:
     def __init__(self, session: AsyncSession):
@@ -19,7 +20,7 @@ class PlanRepository:
             end_date=plan.end_date,
             personal_id=plan.personal_id,
             state=plan.state,
-        ).returing(
+        ).returning(
             ORMPlan.id_plan,
             ORMPlan.description,
             ORMPlan.star_date,
@@ -59,7 +60,7 @@ class PlanRepository:
             )
         return None
     
-    async def get_all_plan(self)->List[PlanEntity]:
+    async def get_all_plan(self)->List[PlanAction]:
         print ("entre al repositorio")
         stmt = (select(ORMPlan.id_plan,
                ORMPlan.description,
@@ -73,9 +74,9 @@ class PlanRepository:
         .join(ORMControl, ORMControlAction.control_id == ORMControl.id_control)  # Relación con tabla Control
         )
         result = await self.session.execute(stmt)
-        print("lo que encuentra ", result.fetchall())
+        rows= result.fetchall()
         return [
-            PlanEntity(
+            PlanAction(
                 id_plan=row.id_plan,
                 description=row.description,
                 star_date=row.star_date,
@@ -84,7 +85,7 @@ class PlanRepository:
                 state=row.state,
                 control_id=row.control_id,
                 control_name=row.control_name,
-            ) for row in result.fetchall()         
+            ) for row in rows         
         ]
         
     async def update_plan(self,plan_id:int, plan:PlanEntity)-> Optional[PlanEntity]:

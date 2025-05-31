@@ -81,7 +81,7 @@ class ProcessRepository:
                 id_process=row.id_process, 
                 macroprocess_id=row.macroprocess_id, 
                 description=row.description,
-                personal=row.personal_id
+                personal_id=row.personal_id
             )
         return None
 

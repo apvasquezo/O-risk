@@ -24,7 +24,7 @@ class PlanActionCreate (BaseModel):
     description:str
     star_date: datetime
     end_date: datetime
-    personal_id: int
+    personal_id: str
     state:Optional[str]
 
 class PlanActionResponse (BaseModel):

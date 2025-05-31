@@ -26,7 +26,7 @@ async def create_risk_category_endpoint(risk_category: RiskCategoryCreate, db: A
     use_case = ManageRiskCategoriesUseCase(repository)
     try:
         created = await use_case.create_risk_category(risk_category.description)
-        return RiskCategoryResponse(**created.__dict__())
+        return RiskCategoryResponse(**created.model_dump())
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -9,3 +9,13 @@ class Plan_action(BaseModel):
     end_date: datetime
     personal_id: str
     state:Optional[str] 
+    
+class PlanAction (BaseModel):
+    id_plan: Optional[int]=None
+    description:str
+    star_date: datetime
+    end_date: datetime
+    personal_id: str
+    state:Optional[str] 
+    control_id:int
+    control_name:str  

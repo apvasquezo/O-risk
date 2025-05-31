@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
-from typing import Optional, List
+from fastapi import APIRouter, Depends
+from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_async_session
@@ -16,7 +16,6 @@ router = APIRouter(
 )
 
 class PlanControlCreate (BaseModel):
-    id_controlaction:Optional[int]=None
     control_id:int
     action_id:int
     
