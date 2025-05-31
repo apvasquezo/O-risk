@@ -1,1 +1,0 @@
-# Archivo __init__.py para convertir este directorio en un paquete de Python
