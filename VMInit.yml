@@ -11,5 +11,4 @@ runcmd:
   - su - azureuser -c "git clone https://github.com/apvasquezo/O-risk /home/azureuser/app/backend"
   - su - azureuser -c "cd /home/azureuser/app/backend && /usr/local/bin/docker-compose up -d"
   - su - azureuser -c "git clone https://github.com/apvasquezo/app-risk /home/azureuser/app/frontend"
-  - su -
-   azureuser -c "cd /home/azureuser/app/frontend && /usr/local/bin/docker-compose up -d"
+  - su - azureuser -c "cd /home/azureuser/app/frontend && /usr/local/bin/docker-compose up -d"
