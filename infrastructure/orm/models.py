@@ -8,7 +8,8 @@ from sqlalchemy import (
     Text,
     Numeric,
     Boolean,
-    DateTime
+    DateTime,
+    Date
 )
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -78,8 +79,8 @@ class EventLog(Base):
     description=Column(String(250), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=True)
-    discovery_date = Column(DateTime, nullable=True)
-    accounting_date = Column(DateTime, nullable=True)
+    discovery_date = Column(Date, nullable=True)
+    accounting_date = Column(Date, nullable=True)
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
@@ -180,7 +181,7 @@ class Notification(Base):
     id_notify = Column(Integer, primary_key=True, autoincrement=True)
     message = Column(String(255), nullable=False)
     suggestion_control = Column(String(255), nullable=False)
-    date_send = Column(DateTime, nullable=False)
+    date_send = Column(Date, nullable=False)
     status = Column(String(50), nullable=False, default='pendiente')  # enviado, fallido, leído
     type = Column(String(50), default='email')  # email, push, interna
     personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
@@ -192,8 +193,8 @@ class History(Base):
     id_history = Column(Integer, primary_key=True, autoincrement=True)
     eventlog_id=Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
     control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=False)
-    star_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    star_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
     value_risk = Column(Numeric(5, 2))
 
 class Plan_action(Base):
@@ -201,8 +202,8 @@ class Plan_action(Base):
     
     id_plan = Column(Integer, primary_key=True, autoincrement=True)
     description=Column(String(255), nullable=False)
-    star_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    star_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
     personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     state=Column(String(50), nullable=True)
     

@@ -84,7 +84,7 @@ async def create_default_roles_and_user():
                 )
                 session.add(admin_user)
                 await session.commit()
-                print("Usuario 'Super Visor' creado correctamente con contraseña 'primeravez'.")
+                print("Usuario 'Super Visor' creado correctamente con contraseña")
             else:
                 print("El usuario 'Super Visor' ya existe.")
 

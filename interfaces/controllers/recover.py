@@ -17,8 +17,8 @@ router = APIRouter(prefix="/recoverpassword", tags=["Recuperación"])
 async def recuperar_contrasena(
     data: RecoveryRequest, 
     db: AsyncSession = Depends(get_async_session)
-):
-    # Buscar usuario por nombre (case-insensitive)
+    ):
+
     result = await db.execute(
         select(User).where(func.lower(User.username) == data.username.lower())
     )
@@ -32,10 +32,6 @@ async def recuperar_contrasena(
 
     # Generar nueva contraseña temporal
     nueva_contraseña = generar_contraseña()
-
-    # (Opcional) Encriptar y guardar nueva contraseña
-    # user.password = hashear_contraseña(nueva_contraseña)
-    # await db.commit()
 
     try:
         enviar_correo(data.email, nueva_contraseña)

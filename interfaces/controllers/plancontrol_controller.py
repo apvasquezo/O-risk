@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from infrastructure.database.db_config import get_async_session
-from domain.repositories.planaction_repository import PlanRepository
+from domain.repositories.plancontrol_repository import PlanControlRepository
 from application.use_case.manage_plancontrol import (
     create_plan_control,
 )
@@ -25,6 +25,6 @@ class PlanControlResponse (BaseModel):
     
 @router.post("/", response_model=PlanControlResponse, status_code=201)
 async def create_plancontrol(plancontrol:PlanControlCreate, db:  AsyncSession = Depends(get_async_session)):
-    repository =PlanRepository(db)
+    repository =PlanControlRepository(db)
     created= await create_plan_control(plancontrol, repository)
     return PlanControlResponse(**created.model_dump())

@@ -54,7 +54,7 @@ async def update_consequence_endpoint(consequence_id: int, consequence: Conseque
         raise HTTPException(status_code=404, detail="Consecuencia no encontrada")
     return ConsequenceResponse(**updated.model_dump())
 
-@router.delete("/{consequence_id}", status_code=204)
+@router.delete("/{consequence_id}", response_model=dict)
 async def delete_consequence_endpoint(consequence_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = ConsequenceRepository(db)
     await delete_consequence(consequence_id, repository)

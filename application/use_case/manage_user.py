@@ -10,6 +10,7 @@ def get_user(user_id: int, repository: UserRepository):
     return repository.get_user(user_id)
 
 async def get_user_username(user_name: str, repository: UserRepository):
+    print("llego al manage")
     return await repository.get_user_username(user_name)
 
 def get_all_users(repository: UserRepository):

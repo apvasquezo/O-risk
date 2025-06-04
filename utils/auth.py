@@ -11,7 +11,7 @@ SECRET_KEY = "tu_secreto_super_seguro"  # Cambia esto por una clave secreta más
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60*24
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # Función para hashear una contraseña usando SHA-256
 def hash_password(password: str) -> str:
