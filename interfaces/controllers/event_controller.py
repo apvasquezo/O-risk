@@ -15,13 +15,13 @@ from utils.auth import role_required
 
 router = APIRouter(
     prefix="/events",
-    tags=["Eventos"],
+    tags=["Registro de Eventos"],
     dependencies=[Depends(role_required("admin"))] 
 )
 
 class EventCreate(BaseModel):
     risk_type_id: int
-    factor: str
+    factor_id: int
     description: str
     probability_id: int
     impact_id: int
@@ -29,7 +29,7 @@ class EventCreate(BaseModel):
 class EventResponse(BaseModel):
     id_event: int
     risk_type_id: int
-    factor: str
+    factor_id: int
     description: str
     probability_id: int
     impact_id: int

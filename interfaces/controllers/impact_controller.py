@@ -16,7 +16,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/impacts",
     tags=["Impactos"],
-    dependencies=[Depends(role_required("super"))]
+    #dependencies=[Depends(role_required("super"))]
 )
 
 class ImpactCreate(BaseModel):
@@ -32,13 +32,13 @@ class ImpactResponse(BaseModel):
     criteria_smlv: float
 
 @router.post("/", response_model=ImpactResponse, status_code=201)
-async def create_impact_endpoint(impact: ImpactCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_impact_endpoint(impact: ImpactCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ImpactRepository(db)
     created = await create_impact(impact, repository)
     return ImpactResponse(**created.model_dump())
 
 @router.get("/{impact_id}", response_model=ImpactResponse)
-async def read_impact_endpoint(impact_id: int, db: AsyncSession = Depends(get_async_session)):
+async def read_impact_endpoint(impact_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ImpactRepository(db)
     impact = await get_impact(impact_id, repository)
     if not impact:
@@ -52,7 +52,7 @@ async def read_all_impacts_endpoint(db: AsyncSession = Depends(get_async_session
     return [ImpactResponse(**i.model_dump()) for i in impacts]
 
 @router.put("/{impact_id}", response_model=ImpactResponse)
-async def update_impact_endpoint(impact_id: int, impact: ImpactCreate, db: AsyncSession = Depends(get_async_session)):
+async def update_impact_endpoint(impact_id: int, impact: ImpactCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ImpactRepository(db)
     updated = await update_impact(impact_id, impact, repository)
     if not updated:
@@ -60,7 +60,7 @@ async def update_impact_endpoint(impact_id: int, impact: ImpactCreate, db: Async
     return ImpactResponse(**updated.model_dump())
 
 @router.delete("/{impact_id}", response_model=dict)
-async def delete_impact_endpoint(impact_id: int, db: AsyncSession = Depends(get_async_session)):
+async def delete_impact_endpoint(impact_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ImpactRepository(db)
     await delete_impact(impact_id, repository)
     return {"detail": "Impacto eliminado"}

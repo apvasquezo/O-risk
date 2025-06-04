@@ -16,7 +16,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/risk-types",
     tags=["Tipos de Riesgo"],
-    dependencies=[Depends(role_required("super"))]
+    #dependencies=[Depends(role_required("super"))]
 )
 
 class RiskTypeCreate(BaseModel):
@@ -29,13 +29,13 @@ class RiskTypeResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=RiskTypeResponse, status_code=201)
-async def create_risk_type_endpoint(risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_risk_type_endpoint(risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_async_session),_: None = Depends(role_required("super"))):
     repository = RiskTypeRepository(db)
     created = await create_risk_type(risk_type, repository)
     return RiskTypeResponse(**created.model_dump())
 
 @router.get("/{risk_type_id}", response_model=RiskTypeResponse)
-async def read_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_async_session)):
+async def read_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = RiskTypeRepository(db)
     risk_type = await get_risk_type(risk_type_id, repository)
     if not risk_type:
@@ -49,7 +49,7 @@ async def read_all_risk_types_endpoint(db: AsyncSession = Depends(get_async_sess
     return [RiskTypeResponse(**r.model_dump()) for r in risk_types]
 
 @router.put("/{risk_type_id}", response_model=RiskTypeResponse)
-async def update_risk_type_endpoint(risk_type_id: int, risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_async_session)):
+async def update_risk_type_endpoint(risk_type_id: int, risk_type: RiskTypeCreate, db: AsyncSession = Depends(get_async_session),_: None = Depends(role_required("super"))):
     repository = RiskTypeRepository(db)
     updated = await update_risk_type(risk_type_id, risk_type, repository)
     if not updated:
@@ -57,7 +57,7 @@ async def update_risk_type_endpoint(risk_type_id: int, risk_type: RiskTypeCreate
     return RiskTypeResponse(**updated.model_dump())
 
 @router.delete("/{risk_type_id}", response_model=dict)
-async def delete_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_async_session)):
+async def delete_risk_type_endpoint(risk_type_id: int, db: AsyncSession = Depends(get_async_session),_: None = Depends(role_required("super"))):
     repository = RiskTypeRepository(db)
     await delete_risk_type(risk_type_id, repository)
     return {"detail": "Tipo de riesgo eliminado"}

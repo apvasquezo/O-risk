@@ -8,7 +8,7 @@ async def get_event(event_id: int, repository: EventRepository) -> Event:
     return await repository.get_event(event_id)
 
 async def get_all_events(repository: EventRepository) -> list[Event]:
-    return await repository.get_all_events()
+    return await repository.get_all_event()
 
 async def update_event(event_id: int, event_data: Event, repository: EventRepository) -> Event:
     return await repository.update_event(event_id, event_data)
