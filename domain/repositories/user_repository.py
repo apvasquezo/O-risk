@@ -12,7 +12,6 @@ class UserRepository:
         self.session = session
 
     async def create_user(self, user: UserEntity) -> UserEntity:
-        print("estoy en repositorio ", user)
         stmt = insert(ORMUser).values(
             username=user.username, 
             password=user.password, 
@@ -49,9 +48,7 @@ class UserRepository:
     async def get_user_username(self, username: str) -> Optional[UserEntity]:
         stmt = select(ORMUser).where(ORMUser.username == username)
         result = await self.session.execute(stmt)
-        print(str(result))
         orm_user = result.unique().scalar_one_or_none()
-        print(str(orm_user))
         if orm_user:
             return UserEntity(
                 id_user=orm_user.id_user,

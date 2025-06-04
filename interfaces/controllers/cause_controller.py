@@ -54,7 +54,7 @@ async def update_cause_endpoint(cause_id: int, cause: CauseCreate, db: AsyncSess
         raise HTTPException(status_code=404, detail="Causa no encontrada")
     return CauseResponse(**updated.model_dump())
 
-@router.delete("/{cause_id}", status_code=204)
+@router.delete("/{cause_id}", response_model=dict)
 async def delete_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_async_session)):
     repository = CauseRepository(db)
     await delete_cause(cause_id, repository)

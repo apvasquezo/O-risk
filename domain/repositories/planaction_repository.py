@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import insert, update, delete
@@ -89,7 +90,8 @@ class PlanRepository:
         ]
         
     async def update_plan(self,plan_id:int, plan:PlanEntity)-> Optional[PlanEntity]:
-        stmt = update(ORMPlan).where(plan.id_plan == plan_id).values(
+        print("ingreso a update ", plan_id)
+        stmt = update(ORMPlan).where(ORMPlan.id_plan == plan_id).values(
             description=plan.description,
             star_date=plan.star_date,
             end_date=plan.end_date,
@@ -108,18 +110,25 @@ class PlanRepository:
         row = result.fetchone()
         if row:
             return PlanEntity(
-                id_plan=plan.id_plan,
-                description=plan.description,
-                star_date=plan.star_date,
-                end_date=plan.end_date,
-                personal_id=plan.personal_id,
-                state=plan.state
+                id_plan=row.id_plan,
+                description=row.description,
+                star_date=row.star_date,
+                end_date=row.end_date,
+                personal_id=row.personal_id,
+                state=row.state
             )
         return None
     
     async def delete_plan(self, plan_id:int)->None:
+        print("Intentando eliminar plan con id ", plan_id)
+        # Primero elimina las relaciones en la tabla intermedia
+        stmt_intermedia = delete(ORMControlAction).where(ORMControlAction.action_id == plan_id)
+        await self.session.execute(stmt_intermedia)        
+        # Luego elimina el plan
         stmt = delete(ORMPlan).where(ORMPlan.id_plan == plan_id)
         result= await self.session.execute(stmt)
+
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail=f"Plan action with ID {plan_id} not found")
+        
         await self.session.commit()
-        if result.rowcount==0:
-            raise ValueError(f"Plan of Action with id {plan_id} not found")
