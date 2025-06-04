@@ -16,7 +16,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/risk-factors",
     tags=["Factores de Riesgo"],
-    dependencies=[Depends(role_required("super"))]
+    #dependencies=[Depends(role_required("super"))]
 )
 
 class RiskFactorCreate(BaseModel):
@@ -29,13 +29,13 @@ class RiskFactorResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=RiskFactorResponse, status_code=201)
-async def create_risk_factor_endpoint(risk_factor: RiskFactorCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_risk_factor_endpoint(risk_factor: RiskFactorCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = RiskFactorRepository(db)
     created = await create_risk_factor(risk_factor, repository)
     return RiskFactorResponse(**created.model_dump())
 
 @router.get("/{risk_factor_id}", response_model=RiskFactorResponse)
-async def read_risk_factor_endpoint(risk_factor_id: int, db: AsyncSession = Depends(get_async_session)):
+async def read_risk_factor_endpoint(risk_factor_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = RiskFactorRepository(db)
     factor = await get_risk_factor(risk_factor_id, repository)
     if not factor:
@@ -49,7 +49,7 @@ async def read_all_risk_factors_endpoint(db: AsyncSession = Depends(get_async_se
     return [RiskFactorResponse(**f.model_dump()) for f in factors]
 
 @router.put("/{risk_factor_id}", response_model=RiskFactorResponse)
-async def update_risk_factor_endpoint(risk_factor_id: int, risk_factor: RiskFactorCreate, db: AsyncSession = Depends(get_async_session)):
+async def update_risk_factor_endpoint(risk_factor_id: int, risk_factor: RiskFactorCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = RiskFactorRepository(db)
     updated = await update_risk_factor(risk_factor_id, risk_factor, repository)
     if not updated:
@@ -57,7 +57,7 @@ async def update_risk_factor_endpoint(risk_factor_id: int, risk_factor: RiskFact
     return RiskFactorResponse(**updated.model_dump())
 
 @router.delete("/{risk_factor_id}", response_model=dict)
-async def delete_risk_factor_endpoint(risk_factor_id: int, db: AsyncSession = Depends(get_async_session)):
+async def delete_risk_factor_endpoint(risk_factor_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = RiskFactorRepository(db)
     await delete_risk_factor(risk_factor_id, repository)
     return {"detail": "Factor de riesgo eliminado"}

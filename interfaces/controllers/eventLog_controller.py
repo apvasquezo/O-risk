@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 from pydantic import BaseModel
@@ -16,31 +16,44 @@ from utils.auth import role_required
 
 router = APIRouter(
     prefix="/event_logs",
-    tags=["Registro de eventos"],
+    tags=["Registro de Riesgos"],
     dependencies=[Depends(role_required("admin"))]
 )
 
 class EventLogCreate(BaseModel):
-    id: Optional[int] = None
     event_id: int
     description: str
-    start_date: datetime
-    end_date: Optional[datetime]
-    discovery_date: Optional[datetime]
-    accounting_date: Optional[datetime]
+    start_date: date
+    end_date: Optional[date]
+    discovery_date: Optional[date]
+    accounting_date: Optional[date]
     amount: Optional[float]
     recovered_amount: Optional[float]
     insurance_recovery: Optional[float]
-    risk_factor_id: int
     product_id: int
     process_id: int
     channel_id: int
     city: Optional[str]
-    responsible_id: int
+    responsible_id: str
     status: Optional[str]
 
 class EventLogResponse(EventLogCreate):
-    id: int
+    id_eventlog: int
+    event_id: int
+    description: str
+    start_date: date
+    end_date: Optional[date]
+    discovery_date: Optional[date]
+    accounting_date: Optional[date]
+    amount: Optional[float]
+    recovered_amount: Optional[float]
+    insurance_recovery: Optional[float]
+    product_id: int
+    process_id: int
+    channel_id: int
+    city: Optional[str]
+    responsible_id: str
+    status: Optional[str]
 
 @router.post("/", response_model=EventLogResponse, status_code=201)
 async def create_event_log_endpoint(event_log: EventLogCreate, db: AsyncSession = Depends(get_async_session)):

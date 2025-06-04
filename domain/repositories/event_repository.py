@@ -13,14 +13,14 @@ class EventRepository:
     async def create_event(self, event:EventEntity) -> EventEntity:
         stmt = insert(Event).values(
             risk_type_id=event.risk_type_id,
-            factor=event.factor,
+            factor_id=event.factor_id,
             description=event.description,
             probability_id=event.probability_id,
             impact_id=event.impact_id
         ).returning(
-            Event.id, 
+            Event.id_event, 
             Event.risk_type_id, 
-            Event.factor, 
+            Event.factor_id, 
             Event.description, 
             Event.probability_id,
             Event.impact_id
@@ -31,9 +31,9 @@ class EventRepository:
             row=result.fetchone()
             if row:
                 return EventEntity(
-                    id=row.id,
+                    id_event=row.id_event,
                     risk_type_id=row.risk_type_id,
-                    factor=row.factor,
+                    factor_id=row.factor_id,
                     description=row.description,
                     probability_id=row.probability_id,
                     impact_id=row.impact_id
@@ -43,14 +43,14 @@ class EventRepository:
             raise ValueError("Event already exists") from e
         
     async def get_event(self, event_id:int) -> Optional[EventEntity]:
-        stmt = select(Event).where(Event.id == event_id)
+        stmt = select(Event).where(Event.id_event == event_id)
         result = await self.session.execute(stmt)
         event= result.scalar_one_or_none()
         if event:
             return EventEntity(
-                id=event.id,
+                id_event=event.id_event,
                 risk_type_id=event.risk_type_id,
-                factor=event.factor,
+                factor_id=event.factor_id,
                 description=event.description,
                 probability_id=event.probability_id,
                 impact_id=event.impact_id
@@ -63,9 +63,9 @@ class EventRepository:
         events = result.scalars().all()
         return [
             EventEntity(
-                id=c.id,
+                id_event=c.id_event,
                 risk_type_id=c.risk_type_id,
-                factor=c.factor,
+                factor_id=c.factor_id,
                 description=c.description,
                 probability_id=c.probability_id,
                 impact_id=c.impact_id
@@ -73,16 +73,16 @@ class EventRepository:
         ]
         
     async def update_event(self, event_id:int, event:EventEntity) -> Optional[EventEntity]:
-        stmt = update(Event).where(Event.id == event_id).values(
+        stmt = update(Event).where(Event.id_event == event_id).values(
             risk_type_id=event.risk_type_id,
-            factor=event.factor,
+            factor_id=event.factor_id,
             description=event.description,
             probability_id=event.probability_id,
             impact_id=event.impact_id
         ). returning(
-            Event.id,
+            Event.id_event,
             Event.risk_type_id,
-            Event.factor,
+            Event.factor_id,
             Event.description,
             Event.probability_id,
             Event.impact_id
@@ -92,9 +92,9 @@ class EventRepository:
         row=result.fetchone()
         if row:
             return EventEntity(
-                id=row.id,
+                id_event=row.id_event,
                 risk_type_id=row.risk_type_id,
-                factor=row.factor,
+                factor_id=row.factor_id,
                 description=row.description,
                 probability_id=row.probability_id,
                 impact_id=row.impact_id
@@ -102,7 +102,7 @@ class EventRepository:
         return None
         
     async def delete_event(self, event_id:int) -> None:
-        stmt= delete(Event).where(Event.id==event_id)
+        stmt= delete(Event).where(Event.id_event==event_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount==0:
