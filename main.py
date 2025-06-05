@@ -31,6 +31,7 @@ from interfaces.controllers import (
     eventLog_controller,
     recover_controller,
     profile_controller,
+    dashboard_controller,
 )
 
 @asynccontextmanager
@@ -85,6 +86,7 @@ def create_app() -> FastAPI:
         eventLog_controller.router,
         recover_controller.router,
         profile_controller.router,
+        dashboard_controller.router,
     ]
 
     for router in routers:
