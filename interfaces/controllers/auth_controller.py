@@ -18,7 +18,7 @@ class TokenResponse(BaseModel):
     token_type: str
     role: str
 
-# ✅ Ruta principal para frontend (JSON)
+# Ruta principal para frontend (JSON)
 @router.post("/login", response_model=TokenResponse)
 async def login(user: UserLogin, db: AsyncSession = Depends(get_async_session)):
     repository = UserRepository(db)
@@ -43,7 +43,7 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_async_session)):
         "role": role
     }
 
-# ✅ Ruta secundaria para pruebas desde Swagger (formulario)
+# Ruta secundaria para pruebas desde Swagger (formulario)
 @router.post("/login-docs", response_model=TokenResponse)
 async def login_docs(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_async_session)):
     repository = UserRepository(db)

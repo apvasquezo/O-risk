@@ -21,13 +21,16 @@ class EventLogRepository:
             amount=event_log.amount,
             recovered_amount=event_log.recovered_amount,
             insurance_recovery=event_log.insurance_recovery,
-            risk_factor_id=event_log.risk_factor_id,
             product_id=event_log.product_id,
             process_id=event_log.process_id,
             channel_id=event_log.channel_id,
             city=event_log.city,
             responsible_id=event_log.responsible_id,
-            status=event_log.status            
+            status=event_log.status,
+            cause1_id= event_log.cause1_id,
+            cause2_id=event_log.cause2_id,
+            conse1_id=event_log.conse1_id,
+            conse2_id=event_log.conse2_id,          
         ).returning(*[c for c in ORMEventLog.__tablen_.columns])
         try:
             result= await self.session.execute(stmt)
@@ -69,7 +72,11 @@ class EventLogRepository:
             channel_id=event_log.channel_id,
             city=event_log.city,
             responsible_id=event_log.responsible_id,
-            status=event_log.status              
+            status=event_log.status,
+            cause1_id= event_log.cause1_id,
+            cause2_id=event_log.cause2_id,
+            conse1_id=event_log.conse1_id,
+            conse2_id=event_log.conse2_id,          
         ).returning(*[c for c in ORMEventLog.__table__.columns])
         result = await self.session.execute(stmt)
         await self.session.commit()

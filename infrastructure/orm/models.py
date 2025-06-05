@@ -8,7 +8,6 @@ from sqlalchemy import (
     Text,
     Numeric,
     Boolean,
-    DateTime,
     Date
 )
 from sqlalchemy.orm import relationship
@@ -77,20 +76,23 @@ class EventLog(Base):
     id_eventlog = Column(Integer, primary_key=True, autoincrement=True)
     event_id = Column(Integer, ForeignKey('events.id_event'), nullable=True)
     description=Column(String(250), nullable=False)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=True)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=True)
     discovery_date = Column(Date, nullable=True)
     accounting_date = Column(Date, nullable=True)
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
-    risk_factor_id = Column(Integer, ForeignKey('risk_factors.id_factor'), nullable=True)
     product_id = Column(Integer, ForeignKey('products_services.id_product'), nullable=True)
     process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
     channel_id = Column(Integer, ForeignKey('channels.id_channel'), nullable=True)
     city = Column(String(100), nullable=True)
     responsible_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
+    cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)   
+    cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)  
+    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True)
+    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True) 
 
 class Impact(Base):
     __tablename__ = 'impact'
@@ -173,7 +175,7 @@ class Tracking(Base):
     personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=False)
     event_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
-    tracking_date = Column(DateTime, nullable=False)
+    tracking_date = Column(Date, nullable=False)
     
 class Notification(Base):
     __tablename__ = 'notification'
@@ -219,11 +221,11 @@ class Evaluation(Base):
     id_evaluation = Column(Integer, primary_key=True, autoincrement=True)
     control_id=Column(Integer, ForeignKey('controls.id_control'), nullable=False)
     event_id=Column(Integer, ForeignKey('events.id_event'), nullable=False)
-    eval_date=Column(DateTime, nullable=False)
+    eval_date=Column(Date, nullable=False)
     n_probability=Column(Integer, ForeignKey('probability.level'), nullable=False)
     n_impact=Column(Integer, ForeignKey('impact.level'), nullable=False)
     personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
-    next_date = Column(DateTime, nullable=False)
+    next_date = Column(Date, nullable=False)
     description=Column(String(255), nullable=False)
     state=Column(String(50), nullable=True)
     
@@ -234,9 +236,8 @@ class Alert(Base):
     title = Column(String(100), nullable=False)  # Breve título de la alerta
     message = Column(String(255), nullable=False)  # Contenido de la alerta
     is_read = Column(Boolean, default=False)  # Indicador si ya fue leída
-    date_created = Column(DateTime, nullable=False)  # Fecha de creación
+    date_created = Column(Date, nullable=False)  # Fecha de creación
     role_id = Column(String(50), nullable=False)  # Rol objetivo que verá la alerta (ej. 'Administrador', 'Supervisor')
     type = Column(String(50), nullable=False)  # Tipo de alerta: 'evento', 'control', etc.
     eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=True)
-    #eventlog = relationship("EventLog",  back_populates="alert", lazy='joined')
     control_id = Column(Integer, ForeignKey('controls.id_control'), nullable=True)
