@@ -89,6 +89,10 @@ class EventLog(Base):
     city = Column(String(100), nullable=True)
     responsible_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
+    cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)   
+    cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)  
+    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True)
+    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True) 
 
 class Impact(Base):
     __tablename__ = 'impact'

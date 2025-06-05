@@ -36,6 +36,10 @@ class EventLogCreate(BaseModel):
     city: Optional[str]
     responsible_id: str
     status: Optional[str]
+    cause1_id: int
+    cause2_id: Optional[int]
+    conse1_id: int
+    conse2_id: Optional[int]
 
 class EventLogResponse(EventLogCreate):
     id_eventlog: int
@@ -54,6 +58,10 @@ class EventLogResponse(EventLogCreate):
     city: Optional[str]
     responsible_id: str
     status: Optional[str]
+    cause1_id: int
+    cause2_id: Optional[int]
+    conse1_id: int
+    conse2_id: Optional[int]
 
 @router.post("/", response_model=EventLogResponse, status_code=201)
 async def create_event_log_endpoint(event_log: EventLogCreate, db: AsyncSession = Depends(get_async_session)):
