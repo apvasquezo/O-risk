@@ -56,6 +56,9 @@ async def update_cause_endpoint(cause_id: int, cause: CauseCreate, db: AsyncSess
 
 @router.delete("/{cause_id}", response_model=dict)
 async def delete_cause_endpoint(cause_id: int, db: AsyncSession = Depends(get_async_session)):
-    repository = CauseRepository(db)
-    await delete_cause(cause_id, repository)
-    return {"detail": "Causa eliminada"}
+    try:
+        repository = CauseRepository(db)
+        await delete_cause(cause_id, repository)
+        return {"detail": "Causa eliminada"}
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error interno al eliminar causa")

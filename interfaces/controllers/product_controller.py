@@ -16,7 +16,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/products",
     tags=["Productos y Servicios"],
-    dependencies=[Depends(role_required("super"))] 
+    #dependencies=[Depends(role_required("super"))] 
 )
 
 class ProductServiceCreate(BaseModel):
@@ -28,13 +28,13 @@ class ProductServiceResponse(BaseModel):
 
 
 @router.post("/", response_model=ProductServiceResponse, status_code=201)
-async def create_product_endpoint(product: ProductServiceCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_product_endpoint(product: ProductServiceCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ProductRepository(db)
     created = await create_product(product, repository)
     return ProductServiceResponse(**created.model_dump())
 
 @router.get("/{product_id}", response_model=ProductServiceResponse)
-async def get_product_endpoint(product_id: int, db: AsyncSession = Depends(get_async_session)):
+async def get_product_endpoint(product_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ProductRepository(db)
     product = await get_product(product_id, repository)
     if not product:
@@ -48,7 +48,7 @@ async def read_all_products(db: AsyncSession = Depends(get_async_session)):
     return [ProductServiceResponse(**p.model_dump()) for p in products]
 
 @router.put("/{product_id}", response_model=ProductServiceResponse)
-async def update_product_endpoint(product_id: int, product: ProductServiceCreate, db: AsyncSession = Depends(get_async_session)):
+async def update_product_endpoint(product_id: int, product: ProductServiceCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ProductRepository(db)
     updated = await update_product(product_id, product, repository)
     if not updated:
@@ -56,7 +56,7 @@ async def update_product_endpoint(product_id: int, product: ProductServiceCreate
     return ProductServiceResponse(**updated.model_dump())
 
 @router.delete("/{product_id}", response_model=dict)
-async def delete_product_endpoint(product_id: int, db: AsyncSession = Depends(get_async_session)):
+async def delete_product_endpoint(product_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ProductRepository(db)
     await delete_product(product_id, repository)
     return {"detail": "Producto o servicio eliminado"}

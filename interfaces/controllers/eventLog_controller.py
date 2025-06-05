@@ -30,6 +30,7 @@ class EventLogCreate(BaseModel):
     amount: Optional[float]
     recovered_amount: Optional[float]
     insurance_recovery: Optional[float]
+    acount: Optional[float]
     product_id: int
     process_id: int
     channel_id: int
@@ -52,6 +53,7 @@ class EventLogResponse(EventLogCreate):
     amount: Optional[float]
     recovered_amount: Optional[float]
     insurance_recovery: Optional[float]
+    acount: Optional[float]
     product_id: int
     process_id: int
     channel_id: int

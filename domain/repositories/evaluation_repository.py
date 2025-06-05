@@ -12,8 +12,8 @@ class EvaluationRepository:
         
     async def create_evaluation(self, evaluation:EvaluationEntity)->EvaluationEntity:
         stmt=insert(Evaluation).values(
+            eventlog_id=evaluation.eventlog_id,            
             control_id=evaluation.control_id,
-            event_id=evaluation.event_id,
             eval_date=evaluation.eval_date,
             n_probability=evaluation.n_probability,
             n_impact=evaluation.n_impact,
@@ -23,8 +23,8 @@ class EvaluationRepository:
             state=evaluation.state
         ).returning(
             Evaluation.id_evaluation,
+            Evaluation.eventlog_id,            
             Evaluation.control_id,
-            Evaluation.event_id,
             Evaluation.eval_date,
             Evaluation.n_probability,
             Evaluation.n_impact,
@@ -40,8 +40,8 @@ class EvaluationRepository:
             if row:
                 return EvaluationEntity(
                     id_evaluation=row.id_evaluation,
+                    eventlog_id=row.eventlog_id,                    
                     control_id=row.control_id,
-                    event_id=row.event_id,
                     eval_date=row.eval_date,
                     n_probability=row.n_probability,
                     n_impact=row.n_impact,
@@ -61,8 +61,8 @@ class EvaluationRepository:
         if evaluations:
             return EvaluationEntity(
                 id_evaluation=evaluations.id_evaluation,
+                eventlog_id=evaluations.eventlog_id,                
                 control_id=evaluations.control_id,
-                event_id=evaluations.event_id,
                 eval_date=evaluations.eval_date,
                 n_probability=evaluations.n_probability,
                 n_impact=evaluations.n_impact,
@@ -80,8 +80,8 @@ class EvaluationRepository:
         return [
             EvaluationEntity(
                id_evaluation=a.id_evaluation,
+                eventlog_id=a.eventlog_id,               
                 control_id=a.control_id,
-                event_id=a.event_id,
                 eval_date=a.eval_date,
                 n_probability=a.n_probability,
                 n_impact=a.n_impact,
@@ -90,4 +90,48 @@ class EvaluationRepository:
                 description=a.description,
                 state=a.state                 
             ) for a in evaluations
-        ]     
+        ]
+        
+    async def update_evaluation(self, evaluation_id:int, eval:EvaluationEntity) -> Optional[EvaluationEntity]:
+        stmt=update(Evaluation).where(Evaluation.id_evaluation == evaluation_id).values(
+            eventlog_id=Evaluation.eventlog_id,               
+            control_id=Evaluation.control_id,
+            eval_date=Evaluation.eval_date,
+            n_probability=Evaluation.n_probability,
+            n_impact=Evaluation.n_impact,
+            personal_id = Evaluation.personal_id,
+            next_date = Evaluation.next_date,
+            description=Evaluation.description,
+            state=Evaluation.state                       
+        ). returning(
+            Evaluation.id_evaluation,
+            Evaluation.eventlog_id,               
+            Evaluation.control_id,
+            Evaluation.eval_date,
+            Evaluation.n_probability,
+            Evaluation.n_impact,
+            Evaluation.personal_id,
+            Evaluation.next_date,
+            Evaluation.description,
+            Evaluation.state             
+        )
+        result= await self.session.execute(stmt)
+        await self.session.commit()
+        row=result.fetchone()
+        if row:
+            return EvaluationEntity(
+                id_evaluation=row.id_evaluation,
+                eventlog_id=row.eventlog_id,               
+                control_id=row.control_id,
+                eval_date=row.eval_date,
+                n_probability=row.n_probability,
+                n_impact=row.n_impact,
+                personal_id = row.personal_id,
+                next_date = row.next_date,
+                description=row.description,
+                state=row.state                 
+            )
+        return None
+    
+    async def delete_evaluation(self, eval_id:int) -> None:
+        stmt=delete(Evaluation).where(Evaluation.id_evaluation==eval_id)

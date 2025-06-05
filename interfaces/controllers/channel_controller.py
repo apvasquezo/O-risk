@@ -16,7 +16,7 @@ from utils.auth import role_required
 router = APIRouter(
     prefix="/channels",
     tags=["Canales"],
-    dependencies=[Depends(role_required("super"))] 
+    #dependencies=[Depends(role_required("super"))] 
 )
 
 class ChannelCreate(BaseModel):
@@ -27,13 +27,13 @@ class ChannelResponse(BaseModel):
     description: str
 
 @router.post("/", response_model=ChannelResponse, status_code=201)
-async def create_channel_endpoint(channel: ChannelCreate, db: AsyncSession = Depends(get_async_session)):
+async def create_channel_endpoint(channel: ChannelCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ChannelRepository(db)
     created = await create_channel(channel, repository)
     return ChannelResponse(**created.model_dump())
 
 @router.get("/{channel_id}", response_model=ChannelResponse)
-async def read_channel(channel_id: int, db: AsyncSession = Depends(get_async_session)):
+async def read_channel(channel_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ChannelRepository(db)
     channel = await get_channel(channel_id, repository)
     if channel is None:
@@ -47,7 +47,7 @@ async def read_channels(db: AsyncSession = Depends(get_async_session)):
     return [ChannelResponse(**c.model_dump()) for c in channels]
 
 @router.put("/{channel_id}", response_model=ChannelResponse)
-async def update_channel_endpoint(channel_id: int, channel: ChannelCreate, db: AsyncSession = Depends(get_async_session)):
+async def update_channel_endpoint(channel_id: int, channel: ChannelCreate, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ChannelRepository(db)
     updated = await update_channel(channel_id, channel, repository)
     if updated is None:
@@ -55,7 +55,7 @@ async def update_channel_endpoint(channel_id: int, channel: ChannelCreate, db: A
     return ChannelResponse(**updated.model_dump())
 
 @router.delete("/{channel_id}", response_model=dict)
-async def delete_channel_endpoint(channel_id: int, db: AsyncSession = Depends(get_async_session)):
+async def delete_channel_endpoint(channel_id: int, db: AsyncSession = Depends(get_async_session), _: None = Depends(role_required("super"))):
     repository = ChannelRepository(db)
     await delete_channel(channel_id, repository)
     return {"detail": "Canal eliminado"}

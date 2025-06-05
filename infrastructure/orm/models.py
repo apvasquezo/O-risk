@@ -83,6 +83,7 @@ class EventLog(Base):
     amount = Column(Numeric(10, 2), nullable=True)
     recovered_amount = Column(Numeric(10, 2), nullable=True)
     insurance_recovery = Column(Numeric(10, 2), nullable=True)
+    acount = Column(Numeric(10, 2), nullable=True)
     product_id = Column(Integer, ForeignKey('products_services.id_product'), nullable=True)
     process_id = Column(Integer, ForeignKey('processes.id_process'), nullable=True)
     channel_id = Column(Integer, ForeignKey('channels.id_channel'), nullable=True)
@@ -90,9 +91,9 @@ class EventLog(Base):
     responsible_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=True)
     status = Column(String(50), nullable=True)
     cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)   
-    cause1_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)  
-    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True)
-    conse1_id=Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True) 
+    cause2_id = Column(Integer, ForeignKey('causes.id_cause'), nullable=True)  
+    conse1_id = Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True)
+    conse2_id = Column(Integer, ForeignKey('consequence.id_consequence'), nullable=True) 
 
 class Impact(Base):
     __tablename__ = 'impact'
@@ -184,8 +185,8 @@ class Notification(Base):
     message = Column(String(255), nullable=False)
     suggestion_control = Column(String(255), nullable=False)
     date_send = Column(Date, nullable=False)
-    status = Column(String(50), nullable=False, default='pendiente')  # enviado, fallido, leído
-    type = Column(String(50), default='email')  # email, push, interna
+    status = Column(String(50), nullable=False, default='pendiente') 
+    type = Column(String(50), default='email') 
     personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     eventlog_id = Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)
 
@@ -219,8 +220,8 @@ class Evaluation(Base):
     __tablename__ = 'evaluation_control'
     
     id_evaluation = Column(Integer, primary_key=True, autoincrement=True)
+    eventlog_id=Column(Integer, ForeignKey('event_logs.id_eventlog'), nullable=False)    
     control_id=Column(Integer, ForeignKey('controls.id_control'), nullable=False)
-    event_id=Column(Integer, ForeignKey('events.id_event'), nullable=False)
     eval_date=Column(Date, nullable=False)
     n_probability=Column(Integer, ForeignKey('probability.level'), nullable=False)
     n_impact=Column(Integer, ForeignKey('impact.level'), nullable=False)

@@ -12,12 +12,13 @@ class EventLog(BaseModel):
     accounting_date: Optional[date]
     amount: Optional[float] 
     recovered_amount: Optional[float] 
-    insurance_recovery: Optional[float]  
+    insurance_recovery: Optional[float]
+    acount: Optional[float]
     product_id: int 
     process_id: int 
     channel_id: int 
     city: Optional[str] 
-    responsible_id: int 
+    responsible_id: str 
     status: Optional[str] 
     cause1_id: int
     cause2_id: Optional[int]
