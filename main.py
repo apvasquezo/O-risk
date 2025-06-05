@@ -6,6 +6,7 @@ from infrastructure.database.db_config import Base, engine
 # Importa todos los routers
 from interfaces.controllers import (
     auth_controller,
+    email_controller,
     user_controller,
     role_controller,
     riskcategory_controller,
@@ -61,6 +62,7 @@ def create_app() -> FastAPI:
     # Lista de routers
     routers = [
         auth_controller.router,
+        email_controller.router,
         user_controller.router,
         role_controller.router,
         riskcategory_controller.router,

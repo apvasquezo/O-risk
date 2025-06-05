@@ -31,7 +31,7 @@ class EventLogRepository:
             cause2_id=event_log.cause2_id,
             conse1_id=event_log.conse1_id,
             conse2_id=event_log.conse2_id,          
-        ).returning(*[c for c in ORMEventLog.__tablen_.columns])
+        ).returning(*[c for c in ORMEventLog.__table__.columns])
         try:
             result= await self.session.execute(stmt)
             await self.session.commit()
@@ -42,7 +42,7 @@ class EventLogRepository:
             raise ValueError ("Failed to create EventLog") from e
         
     async def get_event_log(self, event_log_id:int) -> Optional[EventLogEntity]:
-        stmt = select(ORMEventLog).where(ORMEventLog.id == event_log_id)
+        stmt = select(ORMEventLog).where(ORMEventLog.id_eventlog == event_log_id)
         result = await self.session.execute(stmt)
         event_log= result.scalar_one_or_none()
         if event_log:
@@ -56,7 +56,7 @@ class EventLogRepository:
         return [EventLogEntity(**log.__dict__) for log in event_logs]
     
     async def update_event_log(self, event_log_id:int, event_log: EventLogEntity) -> Optional[EventLogEntity]:
-        stmt = update(ORMEventLog).where(ORMEventLog.id == event_log_id).values(
+        stmt = update(ORMEventLog).where(ORMEventLog.id_eventlog == event_log_id).values(
             event_id=event_log.event_id,
             description=event_log.description,
             start_date=event_log.start_date,
@@ -66,7 +66,6 @@ class EventLogRepository:
             amount=event_log.amount,
             recovered_amount=event_log.recovered_amount,
             insurance_recovery=event_log.insurance_recovery,
-            risk_factor_id=event_log.risk_factor_id,
             product_id=event_log.product_id,
             process_id=event_log.process_id,
             channel_id=event_log.channel_id,
@@ -86,7 +85,7 @@ class EventLogRepository:
         return None
     
     async def delete_event_log(self, event_log_id: int) -> None:
-        stmt = delete(ORMEventLog).where(ORMEventLog.id == event_log_id)
+        stmt = delete(ORMEventLog).where(ORMEventLog.id_eventlog == event_log_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         if result.rowcount == 0:

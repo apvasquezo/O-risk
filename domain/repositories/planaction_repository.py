@@ -9,7 +9,7 @@ from infrastructure.orm.models import Control_action as ORMControlAction
 from infrastructure.orm.models import Control as ORMControl
 from domain.entities.Plan_action import Plan_action as PlanEntity
 from domain.entities.Plan_action import PlanAction
-from domain.entities.Control_action import Control_action as ControlActionEntity
+
 class PlanRepository:
     def __init__(self, session: AsyncSession):
         self.session = session 

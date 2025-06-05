@@ -74,6 +74,22 @@ class PersonalRepository:
             ) for p in orm_personals
         ]
 
+    async def get_notify_personal(self) -> list[PersonalEntity]:
+        stmt= select(ORMPersonal).where(ORMPersonal.notify == True)
+        print("el stmt ", stmt)
+        result = await self.session.execute(stmt)
+        notifys= result.scalars().all()
+        return [
+            PersonalEntity (
+                id_personal=p.id_personal,
+                name=p.name,
+                position=p.position,
+                area=p.area,
+                email=p.email,
+                notify=p.notify
+            ) for p in notifys              
+        ]
+    
     async def update_personal(self, personal_id: str, personal: PersonalEntity) -> Optional[PersonalEntity]:
         stmt = update(ORMPersonal).where(ORMPersonal.id_personal == personal_id).values(
             name=personal.name,
