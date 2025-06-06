@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from infrastructure.orm.models import EventLog as ORMEventLog
 from domain.entities.Event_Log import EventLog as EventLogEntity
+from domain.entities.Event_Log import EventLogDesc
 
 class EventLogRepository:
     def __init__(self, session: AsyncSession):
@@ -54,6 +55,19 @@ class EventLogRepository:
         result = await self.session.execute(stmt)
         event_logs = result.scalars().all()
         return [EventLogEntity(**log.__dict__) for log in event_logs]
+    
+    async def get_desc_event_logs(self) -> List[EventLogDesc]:
+        stmt = select(ORMEventLog.id_eventlog, ORMEventLog.description)
+        print("la consulta ", stmt)
+        result = await self.session.execute(stmt)
+        rows = result.all()
+        print("La respuesta ", rows)
+        return [
+            EventLogDesc(
+                id_eventlog=row.id_eventlog, 
+                description=row.description
+            ) for row in rows
+        ]
     
     async def update_event_log(self, event_log_id:int, event_log: EventLogEntity) -> Optional[EventLogEntity]:
         stmt = update(ORMEventLog).where(ORMEventLog.id_eventlog == event_log_id).values(

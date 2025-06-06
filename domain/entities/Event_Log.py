@@ -24,3 +24,7 @@ class EventLog(BaseModel):
     cause2_id: Optional[int]
     conse1_id: int
     conse2_id: Optional[int]
+    
+class EventLogDesc(BaseModel):
+    id_eventlog: int
+    description: str

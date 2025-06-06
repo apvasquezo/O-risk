@@ -8,7 +8,8 @@ from sqlalchemy import (
     Text,
     Numeric,
     Boolean,
-    Date
+    Date,
+    DateTime
 )
 from sqlalchemy.orm import relationship
 from .base import Base
@@ -225,10 +226,16 @@ class Evaluation(Base):
     eval_date=Column(Date, nullable=False)
     n_probability=Column(Integer, ForeignKey('probability.level'), nullable=False)
     n_impact=Column(Integer, ForeignKey('impact.level'), nullable=False)
-    personal_id = Column(String(15), ForeignKey('personal.id_personal'), nullable=False)
     next_date = Column(Date, nullable=False)
     description=Column(String(255), nullable=False)
-    state=Column(String(50), nullable=True)
+    observation=Column(String(50), nullable=False)
+    state_control=Column(String(50), nullable=False, default='Propuesto')
+    state_evaluation=Column(String(50), nullable=True, default='No Evaluado')
+    control_efficiency= Column(Numeric(10,2), nullable=True, default=0)
+    created_at = Column(DateTime, nullable=False, default=func.now())
+    updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
+    created_by = Column(String(50), nullable=False)   
+    
     
 class Alert(Base):
     __tablename__ = 'alert'
