@@ -103,7 +103,7 @@ async def update_eval_endpoint(eval_id:int, evaluation: EvalControlCreate, db: A
         logging.error(f"Error en update_eval_endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-@router.delete("/{eval_id}", response_model=EvalControlResponse)
+@router.delete("/{eval_id}", response_model=dict)
 async def delete_eval_endpoint(eval_id:int, db: AsyncSession = Depends(get_async_session)):
     try:
         repository = EvaluationRepository(db)
