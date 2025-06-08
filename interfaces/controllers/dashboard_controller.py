@@ -27,7 +27,8 @@ class RiskResidual(BaseModel):
     n_probability: int
     n_impact: int
 
-@router.get("/", response_model=List[PlanResponse])
+# Endpoint para planes de acción por estado
+@router.get("/", response_model=List[PlanStateCount])
 async def read_all_plan(db: AsyncSession = Depends(get_async_session)):
     repository = PlanDRepository(db)
     return await repository.get_all_plan()
@@ -61,3 +62,9 @@ async def read_residual(db: AsyncSession = Depends(get_async_session)):
         raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
     except Exception as e:
         logging.error(f"Error en read_inherente: {str(e)}")
+
+# Endpoint para el mapa de calor de riesgos por proceso
+@router.get("/risk-heatmap")
+async def get_heatmap_chart_data(db: AsyncSession = Depends(get_async_session)):
+    repository = PlanDRepository(db)
+    return await repository.get_risk_heatmap_chart_data()

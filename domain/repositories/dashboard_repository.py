@@ -11,7 +11,7 @@ from domain.entities.Evaluation import Evalrisk
 
 class PlanDRepository:
     def __init__(self, session: AsyncSession):
-        self.session = session 
+        self.session = session
 
     async def get_all_plan(self) -> List[PlanStateCount]:
         stmt = select(ORMPlan.state, func.count().label("cantidad")).group_by(ORMPlan.state)
