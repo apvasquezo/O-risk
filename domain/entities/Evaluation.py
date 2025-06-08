@@ -16,3 +16,9 @@ class Evaluation(BaseModel):
     state_evaluation: str
     control_efficiency: float
     created_by: str  
+    
+class Evalrisk(BaseModel):
+    eventlog_id: int 
+    n_probability: int
+    n_impact: int
+    
