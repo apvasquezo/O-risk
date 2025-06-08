@@ -22,3 +22,7 @@ class Evalrisk(BaseModel):
     n_probability: int
     n_impact: int
     
+class KriFrequency(BaseModel):
+    periodo: str
+    cantidad: int
+    
