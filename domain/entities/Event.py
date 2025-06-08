@@ -8,3 +8,9 @@ class Event(BaseModel):
     description:str
     probability_id:int
     impact_id:int
+    
+class RiskInherente(BaseModel):
+    id_event:int
+    description:str
+    probability_id:int
+    impact_id:int
