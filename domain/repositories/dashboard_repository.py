@@ -1,24 +1,24 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List
-from sqlalchemy import func
+from sqlalchemy import func, literal_column
 from infrastructure.orm.models import Plan_action as ORMPlan
 from infrastructure.orm.models import Event as ORMInherente
 from infrastructure.orm.models import Evaluation as ORMResidual
 from domain.entities.Plan_action import PlanStateCount
 from domain.entities.Event import RiskInherente
-from domain.entities.Evaluation import Evalrisk
+from domain.entities.Evaluation import Evalrisk, KriFrequency
 
 class PlanDRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
     async def get_all_plan(self) -> List[PlanStateCount]:
-        stmt = select(ORMPlan.state, func.count().label("cantidad")).group_by(ORMPlan.state)
+        stmt = select(ORMPlan.state, func.count().label("amount")).group_by(ORMPlan.state)
         result = await self.session.execute(stmt)
         rows = result.fetchall()
         return [
-            PlanStateCount(state=row.state, cantidad=row.cantidad)
+            PlanStateCount(state=row.state, cantidad=row.amount)
             for row in rows
         ]
     
@@ -48,4 +48,34 @@ class PlanDRepository:
                 n_impact=row[2],
             ) for row in rows
         ]  
+
+    async def get_eval_control(self) -> List[PlanStateCount]:
+        stmt = select(ORMResidual.control_efficiency, func.count().label("amount")).group_by(ORMResidual.control_efficiency)
+        result = await self.session.execute(stmt)      
+        rows = result.fetchall()
+        state_map = {
+                0.20: "Critica",
+                0.50: "Baja",
+                0.80: "Moderadamente eficiente",
+                1: "Alta"
+            }
         
+        return [
+            PlanStateCount(state=state_map.get(row.control_efficiency), amount=row.amount)
+            for row in rows
+        ]                
+
+    async def get_eval_frequency(self) -> List[KriFrequency]:
+        stmt = (
+            select(
+                func.date_trunc(literal_column("'month'"), ORMResidual.eval_date).label("periodo"),
+                func.count().label("cantidad")
+            )
+            .group_by(func.date_trunc(literal_column("'month'"), ORMResidual.eval_date))
+            .order_by(func.date_trunc(literal_column("'month'"), ORMResidual.eval_date))
+        )
+        print("la consulta ", stmt)  
+        result = await self.session.execute(stmt)
+        rows = result.fetchall()
+
+        return [{"periodo": row.periodo.strftime("%Y-%m"), "cantidad": row.cantidad} for row in rows]

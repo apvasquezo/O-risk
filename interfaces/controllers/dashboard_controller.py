@@ -13,8 +13,9 @@ router = APIRouter(
     dependencies=[Depends(role_required("admin"))]
 )
 
-class PlanResponse(BaseModel):
+class PlanStateCount(BaseModel):
     state:str
+    amount: int
 
 class RiskInherente(BaseModel):
     id_event:int
@@ -26,12 +27,36 @@ class RiskResidual(BaseModel):
     eventlog_id: int 
     n_probability: int
     n_impact: int
+    
+class KriFrequency(BaseModel):
+    periodo: str
+    cantidad: int
 
 # Endpoint para planes de acción por estado
 @router.get("/", response_model=List[PlanStateCount])
 async def read_all_plan(db: AsyncSession = Depends(get_async_session)):
     repository = PlanDRepository(db)
     return await repository.get_all_plan()
+
+@router.get("/efficiency", response_model=List[PlanStateCount])
+async def read_all_efficiency(db: AsyncSession = Depends(get_async_session)):
+    try:
+        repository = PlanDRepository(db)
+        return await repository.get_eval_control()
+    except ValueError as e: 
+        raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error en read_all_efficiency: {str(e)}")    
+
+@router.get("/frequency", response_model=List[KriFrequency])
+async def read_control_frequency(db: AsyncSession = Depends(get_async_session)):
+    try:
+        repository = PlanDRepository(db)
+        return await repository.get_eval_frequency()
+    except ValueError as e: 
+        raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error en read_control_frecuency: {str(e)}")      
 
 @router.get("/inherente", response_model=List[RiskInherente])
 async def read_inherente(db: AsyncSession = Depends(get_async_session)):
