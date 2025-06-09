@@ -31,9 +31,13 @@ class RiskResidual(BaseModel):
 class KriFrequency(BaseModel):
     periodo: str
     cantidad: int
+    
+class ComplianceResult(BaseModel):
+    responsible: str
+    cumplimiento: float
 
 # Endpoint para planes de acción por estado
-@router.get("/", response_model=List[PlanStateCount])
+@router.get("/plan", response_model=List[PlanStateCount])
 async def read_all_plan(db: AsyncSession = Depends(get_async_session)):
     repository = PlanDRepository(db)
     return await repository.get_all_plan()
@@ -86,10 +90,15 @@ async def read_residual(db: AsyncSession = Depends(get_async_session)):
     except ValueError as e: 
         raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
     except Exception as e:
-        logging.error(f"Error en read_inherente: {str(e)}")
+        logging.error(f"Error en read_residual: {str(e)}")
 
-# Endpoint para el mapa de calor de riesgos por proceso
-@router.get("/risk-heatmap")
-async def get_heatmap_chart_data(db: AsyncSession = Depends(get_async_session)):
-    repository = PlanDRepository(db)
-    return await repository.get_risk_heatmap_chart_data()
+
+@router.get("/compliance", response_model=List[ComplianceResult])
+async def get_compliance(db: AsyncSession = Depends(get_async_session)):
+    try:
+        repository= PlanDRepository(db) 
+        return await repository.get_cumplimiento()
+    except ValueError as e: 
+        raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
+    except Exception as e:
+        logging.error(f"Error en get_compliance: {str(e)}")

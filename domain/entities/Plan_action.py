@@ -20,8 +20,10 @@ class PlanAction (BaseModel):
     control_id:int
     control_name:str  
     
-from pydantic import BaseModel
-
 class PlanStateCount(BaseModel):
     state: str
     amount: int
+    
+class ComplianceResult(BaseModel):
+    responsible: str
+    cumplimiento: float
