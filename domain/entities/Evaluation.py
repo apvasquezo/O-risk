@@ -25,4 +25,9 @@ class Evalrisk(BaseModel):
 class KriFrequency(BaseModel):
     periodo: str
     cantidad: int
+
+class KriLevel(BaseModel):
+    Level: str
+    amount: int
+
     
