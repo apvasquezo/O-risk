@@ -49,16 +49,17 @@ class PlanDRepository:
 
     async def get_eval_control(self) -> List[PlanStateCount]:
         stmt = select(ORMResidual.control_efficiency, func.count().label("amount")).group_by(ORMResidual.control_efficiency)
-        result = await self.session.execute(stmt)      
+        result = await self.session.execute(stmt) 
+        print("la consulta ", stmt)     
         rows = result.fetchall()
         state_map = {
                 0.20: "Critica",
                 0.50: "Baja",
-                0.80: "Moderadamente eficiente",
+                0.80: "Eficiente",
                 1: "Alta"
             }
         return [
-            PlanStateCount(state=state_map.get(row.control_efficiency), amount=row.amount)
+            PlanStateCount(state=state_map.get(float(row.control_efficiency)), amount=row.amount)
             for row in rows
         ]                
 
